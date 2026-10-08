@@ -4,6 +4,10 @@
 
 It should feel like the wellness apps people actually use today: soft rounded cards, generous space, big friendly type, gentle gradients, satisfying little animations, a bottom tab bar. The theme lives on top of that, not instead of it. It must never feel like a costume party where you can't find the Start button.
 
+> **Update (Oct 2026): current look.** Julie asked for the style of [flossgiven.com](https://www.flossgiven.com): 1970s retro, with a grass-green top band and a wavy edge, a blush page, cream cards, bright pill buttons and the groovy **Caprasimo** font for headings (Figtree for body). This replaces the palette and fonts below; the card-deck idea, motifs, copy and accessibility rules still apply. We borrow the style only, never that site's logo, photos or lettering.
+>
+> Tokens live in `css/styles.css`. Light: page `#F7DCE5`, cards `#FFFDF6`, text deep green `#173D2B`, band `#1A9C5C`, Start hot pink `#F05094`, "I'm bored" and wildcards sunshine yellow `#F9DA4F`, selected bubblegum `#FFB9D3`. Types: Burn tomato `#F8341A`, Strength green, Athlete orange `#E9842B`, Mobility lavender `#B9A6F0`. **Bright colors are fills only and always carry dark text (`--on-fill`)**; cream text on them fails contrast. Dark theme is a deep forest green with the same bright fills.
+
 ## The big idea: a lucky card deck
 
 The app is already built around face-down cards you flip one at a time. Lean into that:

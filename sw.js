@@ -1,6 +1,6 @@
 // Offline support. The app files are cached on install; Google Fonts are cached the first time they load.
 // Bump VERSION whenever any app file changes, so phones pick up the new version.
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = "shuffle-sweat-" + VERSION;
 const APP_FILES = [
   "./",
