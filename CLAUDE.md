@@ -120,7 +120,7 @@ The highest score wins. Mix is chosen when cardio and strength are both urgent. 
 
 ### Set weekly plans
 
-`ss_plan = { type: "shuffle" | "zero", done: { "<Monday YYYY-MM-DD>": [day indexes] } }`. A plan day plays one exercise per round (so "Call it a win" works between exercises) and one card per set, with the plan's own rest between sets. Easier/Harder are hidden on plan cards; Shake it up still swaps in a wildcard. A day gets its checkmark when it ends, early or not. Zero still needs: the 12th Full Body (day 1) exercise and the Day 6 HIIT. The third Day 1 exercise name was hidden in the screenshot and is a guess ("Alternating reverse lunge with rotation").
+`ss_plan = { type: "shuffle" | "zero", done: { "<Monday YYYY-MM-DD>": [day indexes] } }`. A plan day plays one exercise per round (so "Call it a win" works between exercises) and one card per set, with the plan's own rest between sets. Easier/Harder are hidden on plan cards; Shake it up still swaps in a wildcard. A day gets its checkmark when it ends, early or not. A day with `rounds: N` is a circuit (each exercise once per round). Zero still needs: the 12th Full Body (Day 1) exercise, and weeks 2+. The third Day 1 exercise name was hidden in the screenshot and is a guess ("Alternating reverse lunge with rotation").
 
 ### Other localStorage keys
 
