@@ -22,6 +22,7 @@
 <!-- Scripts share one global scope and run in this order (defer keeps it). -->
 <script defer src="js/store.js"></script>
 <script defer src="js/moves.js"></script>
+<script defer src="js/poses.js"></script>
 <script defer src="js/figure.js"></script>
 <script defer src="js/week.js"></script>
 <script defer src="js/workout.js"></script>
@@ -41,9 +42,16 @@
   <!-- WELCOME -->
   <section id="welcome">
     <div class="hello">
-      <h1>Howdy, Julie <span class="spark" aria-hidden="true">✦</span></h1>
-      <p>Saddle up. One round counts. Shuffle Sweat is a workout deck for brains that get bored. Here's the whole thing:</p>
+      <h1>Howdy, partner <span class="spark" aria-hidden="true">✦</span></h1>
     </div>
+    <figure class="letter">
+      <blockquote>
+        <p>Hi, I'm Julie. I have ADHD, and I quit every workout I tried because I got bored halfway through. So I vibe-coded the one I always wanted: short, surprising, and okay to stop whenever.</p>
+        <p>Hope you love it. See you after the sweat.</p>
+      </blockquote>
+      <figcaption>Julie <span aria-hidden="true">✦</span></figcaption>
+    </figure>
+    <p class="intro">Saddle up. One round counts. Here's how it works:</p>
     <ol class="steps">
       <li><div><b>Set your week once.</b><span>Pick a focus. The app turns health guidelines into weekly targets and suggests what to do each day.</span></div></li>
       <li><div><b>Pick type, minutes and level.</b><span>Or tap the smart pick for today.</span></div></li>
@@ -136,6 +144,7 @@
       <h2 id="title">Squats</h2>
       <svg class="fig" id="fig" viewBox="0 -14 200 132" role="img" aria-label="Animated stick figure showing the move">
         <line class="ground" x1="10" y1="111" x2="190" y2="111"></line>
+        <g class="prop" id="prop"></g><polyline class="tether" id="tether"></polyline>
         <g class="far"><polyline id="farArm"></polyline><polyline id="farLeg"></polyline></g>
         <g class="near"><polyline id="body"></polyline><polyline id="nearArm"></polyline><polyline id="nearLeg"></polyline><path id="pony" class="pony" d="M-5-4C-13-3-15 3-12 10"></path><circle id="head" r="7.5"></circle><g id="hat" class="hat"><path d="M-6.5-5.5C-7.5-13-4-15-1.5-13.3 0-12.3 0-12.3 1.5-13.3 4-15 7.5-13 6.5-5.5Z"/><path d="M-13.5-6C-11-2.5 11-2.5 13.5-6 11-4.4-11-4.4-13.5-6Z"/></g></g>
       </svg>

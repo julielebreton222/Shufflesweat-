@@ -67,6 +67,14 @@ button:focus-visible,.pick input:focus-visible+label,a:focus-visible{outline:3px
 /* Welcome */
 .hello h1{font-size:clamp(36px,11vw,50px)}
 .hello p{color:var(--muted);margin-top:10px;max-width:34ch;font-size:17px}
+.letter{margin:0;position:relative;background:var(--surface);border-radius:24px;padding:18px 18px 16px;display:grid;gap:8px;
+  box-shadow:0 10px 26px var(--shadow);border:2px dashed color-mix(in srgb,var(--accent) 45%,transparent);transform:rotate(-1deg)}
+.letter::before{content:"";position:absolute;top:-10px;left:50%;width:70px;height:20px;margin-left:-35px;border-radius:4px;
+  background:color-mix(in srgb,var(--lucky) 70%,transparent);transform:rotate(3deg)}
+.letter blockquote{margin:0;display:grid;gap:8px;font-size:17px;line-height:1.5}
+.letter figcaption{font:400 22px var(--display);color:var(--ink);justify-self:end;transform:rotate(-3deg)}
+.letter figcaption span{color:var(--accent)}
+.intro{color:var(--muted);font-size:16px}
 .steps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
 .steps li{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;background:var(--surface);border-radius:20px;padding:14px}
 .steps li::before{counter-increment:s;content:counter(s);width:36px;height:36px;border-radius:999px;background:var(--pop-soft);color:var(--ink);font:400 18px var(--display);display:grid;place-items:center}
@@ -135,6 +143,12 @@ button:focus-visible,.pick input:focus-visible+label,a:focus-visible{outline:3px
 .fig .pony{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round}
 .card.wild .fig .hat{fill:var(--lucky);stroke:var(--wild-ink)}
 .card.wild .fig .pony{stroke:var(--wild-ink)}
+.fig .prop path{fill:none;stroke:color-mix(in srgb,var(--ink) 45%,transparent);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.fig .prop .fill{fill:color-mix(in srgb,var(--ink) 12%,transparent)}
+.fig .prop .faint{opacity:.5}
+.fig .prop .knob{fill:color-mix(in srgb,var(--ink) 60%,transparent)}
+.fig .tether{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round}
+.card.wild .fig .tether{stroke:var(--wild-ink)}
 .fig .ground{stroke:color-mix(in srgb,var(--c) 70%,transparent);stroke-width:3}
 .card.wild .fig{background:color-mix(in srgb,var(--wild-ink) 8%,transparent)}
 .card.wild .fig polyline{stroke:var(--wild-ink)} .card.wild .fig circle{fill:var(--wild-ink)}

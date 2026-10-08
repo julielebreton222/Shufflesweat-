@@ -21,7 +21,20 @@ function makeWild(){
 // sound + voice
 let soundOn=true, voiceOn=false, ac=null;
 function beep(f=880,d=.12){ if(!soundOn) return; try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(),g=ac.createGain(); o.frequency.value=f; o.type="triangle"; g.gain.setValueAtTime(.18,ac.currentTime); g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d); o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime+d);}catch(e){} }
-function say(t){ if(!voiceOn) return; try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.rate=1.05; speechSynthesis.speak(u);}catch(e){} }
+// Read-aloud uses the best English voice the device has. On iPhone, downloaded "Enhanced" or "Premium" Siri voices
+// sound far more human (Settings → Accessibility → Spoken Content → Voices → English).
+let bestVoice=null;
+function pickVoice(){
+  try{
+    const vs=speechSynthesis.getVoices().filter(v=>/^en[-_]/i.test(v.lang));
+    const score=v=>(/premium/i.test(v.name)?40:0)+(/enhanced|neural|natural/i.test(v.name)?30:0)+(/siri/i.test(v.name)?20:0)
+      +(/^(ava|zoe|samantha|allison|susan|serena|karen|moira|tessa|evan|nathan|google us english|google uk english female)/i.test(v.name)?10:0)
+      +(v.localService?2:0)-(/compact|eloquence|albert|bad news|bells|boing|bubbles|cellos|jester|organ|superstar|trinoids|whisper|wobble|zarvox|fred|junior|ralph/i.test(v.name)?50:0);
+    bestVoice=vs.sort((a,b)=>score(b)-score(a))[0]||null;
+  }catch(e){}
+}
+try{ pickVoice(); speechSynthesis.addEventListener("voiceschanged",pickVoice); }catch(e){}
+function say(t){ if(!voiceOn) return; try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); if(bestVoice){u.voice=bestVoice;u.lang=bestVoice.lang;} u.rate=1; u.pitch=1.05; speechSynthesis.speak(u);}catch(e){} }
 $("soundBtn").onclick=e=>{soundOn=!soundOn;e.currentTarget.setAttribute("aria-pressed",soundOn)};
 $("voiceBtn").onclick=e=>{voiceOn=!voiceOn;e.currentTarget.setAttribute("aria-pressed",voiceOn); if(voiceOn) say("Okay. I'll read the cards.")};
 let wake=null;
@@ -111,7 +124,7 @@ function showCard(){
   if(c.wild) $("title").textContent=c.n;
   $("cue").textContent=c.c;
   renderLevel(c);
-  if(c.choice) $("fig").toggleAttribute("hidden",true); else setFig(figFor(c));
+  if(c.choice) $("fig").toggleAttribute("hidden",true); else setFig(figFor(c),propFor(c));
   $("boredBtn").innerHTML='Shake it up ✦<small>Swap for a wildcard</small>';
   $("skipBtn").textContent="Next card";
   renderPips(); clearTimeout(choiceTimer); stopTimer();

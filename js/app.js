@@ -9,8 +9,8 @@ updateStartLabel();
 $("helpBtn").onclick=()=>{ if(phase==="work"||phase==="rest"){ pauseTimer(); paused=true; $("pauseBtn").textContent="Resume"; } helpFrom=phase; show("welcome"); $("welcomeBtn").textContent= (phase==="work"||phase==="rest")?"Back to my workout":"Let's set it up"; };
 let helpFrom="home";
 $("welcomeBtn").onclick=()=>{ store.set("ss_seen",1); if(helpFrom==="work"||helpFrom==="rest") show("play"); else if(helpFrom==="end") show("end"); else if(!GOALS) openWeek(); else goHome(); };
-$("easier").onclick=()=>{const c=deck[idx]; if(c&&!c.wild&&c.lvl>0){c.lvl--;renderLevel(c);say(c.n[c.lvl])}};
-$("harder").onclick=()=>{const c=deck[idx]; if(c&&!c.wild&&c.lvl<2){c.lvl++;renderLevel(c);say(c.n[c.lvl])}};
+$("easier").onclick=()=>{const c=deck[idx]; if(c&&!c.wild&&c.lvl>0){c.lvl--;renderLevel(c);setFig(figFor(c),propFor(c));say(c.n[c.lvl])}};
+$("harder").onclick=()=>{const c=deck[idx]; if(c&&!c.wild&&c.lvl<2){c.lvl++;renderLevel(c);setFig(figFor(c),propFor(c));say(c.n[c.lvl])}};
 $("countBtn").onclick=()=>{ count++; $("countBtn").textContent="+1 · "+count; };
 $("doneBtn").onclick=()=>{
   const c=deck[idx]; if(phase!=="work"||!c) return;
