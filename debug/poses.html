@@ -7,11 +7,11 @@
 <link rel="stylesheet" href="../css/styles.css">
 <style>
   body{padding:16px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(400px,100%),1fr));gap:12px}
   .mv{background:var(--surface);border-radius:16px;padding:10px 12px;display:grid;gap:6px}
   .mv h3{margin:0;font:700 14px var(--body)} .mv small{color:var(--muted);font-size:12px}
   .frames{display:flex;gap:4px;flex-wrap:wrap}
-  .frames svg{width:190px;height:auto;background:color-mix(in srgb,var(--str) 12%,transparent);border-radius:10px}
+  .frames svg{width:min(190px,44vw);height:auto;background:color-mix(in srgb,var(--str) 12%,transparent);border-radius:10px}
   .frames span{font-size:10px;color:var(--muted);display:block;text-align:center}
   .fig polyline{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
   .fig .far polyline{opacity:.38} .fig circle{fill:var(--ink)}
