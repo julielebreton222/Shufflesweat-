@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shuffle Sweat poses</title>
+<link rel="stylesheet" href="../css/styles.css">
+<style>
+  body{padding:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(400px,100%),1fr));gap:12px}
+  .mv{background:var(--surface);border-radius:16px;padding:10px 12px;display:grid;gap:6px}
+  .mv h3{margin:0;font:700 14px var(--body)} .mv small{color:var(--muted);font-size:12px}
+  .frames{display:flex;gap:4px;flex-wrap:wrap}
+  .frames svg{width:min(190px,44vw);height:auto;background:color-mix(in srgb,var(--str) 12%,transparent);border-radius:10px}
+  .frames span{font-size:10px;color:var(--muted);display:block;text-align:center}
+  .fig polyline{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+  .fig .far polyline{opacity:.38} .fig circle{fill:var(--ink)}
+  .fig .ground{stroke:var(--line);stroke-width:3}
+  .fig .hat{fill:var(--accent);stroke:var(--ink);stroke-width:1.2}
+  .fig .pony{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+  .fig .prop path{fill:none;stroke:color-mix(in srgb,var(--ink) 45%,transparent);stroke-width:2.5;stroke-linecap:round} .fig .prop .fill{fill:color-mix(in srgb,var(--ink) 14%,transparent)} .fig .prop .faint{opacity:.5} .fig .prop .knob{fill:var(--ink)} .fig .tether{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round}
+</style>
+</head>
+<body>
+<h1 style="font-size:28px">Every move, every pose</h1>
+<p class="note">One row per move and level. Each frame is one pose in the loop, in order. Props (chair, wall, door, step…) are drawn where the move uses them.</p>
+<div class="grid" id="grid"></div>
+<script src="../js/store.js"></script>
+<script src="../js/moves.js"></script>
+<script src="../js/poses.js"></script>
+<script src="../js/figure.js"></script>
+<script>
+const mk=(seq,prop)=>seq.map(k=>`<div><svg class="fig" viewBox="0 -14 200 132">${typeof figSVG==="function"?figSVG(POSE[k],prop):""}</svg><span>${k}</span></div>`).join("");
+let html="";
+const card=(title,sub,seq,prop)=>`<div class="mv"><h3>${title}</h3><small>${sub}${prop?" · prop: "+prop:""}</small><div class="frames">${mk(seq,prop)}</div></div>`;
+MOVES.forEach(m=>{ let last="";
+  m.n.forEach((name,lvl)=>{ const c={...m,lvl}, e=figEntry(c), key=JSON.stringify(e);
+    if(key===last) return; last=key;
+    const same=m.n.filter((x,i)=>i>lvl&&JSON.stringify(figEntry({...m,lvl:i}))===key);
+    html+=card([name,...same].join(" / "),`${TYPE_NAMES[m.m]} · ${LEVELS[lvl]}`,figFor(c),propFor(c)); });
+});
+Object.entries(WILD).forEach(([cat,list])=>{ if(cat==="choice") return; list.forEach(w=>{ const c={wild:cat,...w}; html+=card(w.n,"Wildcard · "+WILD_NAMES[cat],figFor(c),propFor(c)); });});
+document.getElementById("grid").innerHTML=html;
+</script>
+</body>
+</html>

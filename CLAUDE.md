@@ -19,10 +19,33 @@ Julie has ADHD and kept quitting follow-along workout videos (like Growingannana
 
 ## Current state
 
-- One file: `shuffle-sweat.html`, about 70 KB, vanilla HTML, CSS and JavaScript. No build step, no framework, no dependencies except Google Fonts (Bricolage Grotesque and Figtree, to be replaced by the new design).
-- It was written as a claude.ai artifact. That means it has no `<!doctype>`, `<html>`, `<head>` or `<body>` tags (the host added them). When turning it into a standalone app, add a proper document skeleton with a viewport meta that includes `viewport-fit=cover`.
+- A small installable web app (PWA): vanilla HTML, CSS and JavaScript. No build step, no framework, no dependencies except Google Fonts (Bricolage Grotesque and Figtree, to be replaced by the new design).
+- It started as a single-file claude.ai artifact (`shuffle-sweat.html`, still in the git history) and was split into files without changing how it looks or works.
 - All state lives in `localStorage` (keys below), wrapped in try/catch.
 - Works in light and dark mode through CSS custom properties on `:root`, with a `prefers-color-scheme` block and a `[data-theme]` override.
+
+### Files
+
+| File | What's in it |
+|---|---|
+| `index.html` | Document skeleton, install meta tags, and the markup for every screen |
+| `css/styles.css` | All styles and the color tokens |
+| `js/store.js` | `$` (get element by id) and `store` (safe localStorage) |
+| `js/moves.js` | Data: `MOVES`, `GROUP`, names, timings (`LADDER`, `HOLD`, `REST`, `ROUNDS`) and `WILD` |
+| `js/poses.js` | Stick-figure poses (`P`). **Generated**: edit `tools/poses.py`, then run `python3 tools/poses.py` |
+| `js/figure.js` | Props (`PROPS`: chair, wall, door, step, stairs, table, counter, couch), move → pose loop + prop (`FIG`, per level), wildcards (`WILD_FIG`) and the animation |
+| `tools/poses.py` | Builds poses from where the hands and feet go, with joints that only bend the natural way |
+| `debug/poses.html` | Every move and level, every pose, with props. Open it to check the figures |
+| `js/week.js` | Daily log, `credit()`, today's stats, the weekly goals screen, `weightedShuffle()` and `suggestion()` |
+| `js/workout.js` | Wildcard picking, sound and voice, timer, deck building, cards, rests, round end and the bored button |
+| `js/app.js` | Remaining button wiring, first-screen choice, service-worker registration |
+| `manifest.webmanifest`, `sw.js`, `icons/` | Install and offline support. The icon is a placeholder. |
+
+The scripts are **classic scripts that share one global scope**, loaded with `defer` in the order listed in `index.html`. Code that runs at load time may only use things from earlier files; functions can call anything once the page has loaded.
+
+**When you change any file, bump `VERSION` in `sw.js`** (and add new files to `APP_FILES`), otherwise installed copies keep serving the old cached version.
+
+To run locally: `python3 -m http.server 8000` in the repo folder, then open http://localhost:8000. The service worker only runs over http(s), not from a `file://` URL.
 
 ## Screens (all in the one page, toggled with the `hidden` attribute)
 
@@ -102,16 +125,18 @@ The highest score wins. Mix is chosen when cardio and strength are both urgent. 
 
 ## Stick-figure pictures
 
-There's a side-view figure facing right, drawn as SVG polylines (`#fig`, viewBox `0 -14 200 132`, ground at y=111).
+A side-view cowgirl facing right (hat and ponytail), drawn as SVG polylines (`#fig`, viewBox `0 -14 200 132`, ground at y=111).
 
 - **Pose format:** `{hx, hy, t, ua, fa, ua2, fa2, th, sh, th2, sh2}`, where `hx, hy` is the hip position.
   - `t` = torso angle (0 = straight up, +90 = pointing forward).
   - Limb angles: 0 = straight down, +90 = forward, 180 = up, −90 = back.
-  - The `2` suffix = the far limb, drawn at 38% opacity. A missing value falls back to the near limb.
-- **Segment lengths:** torso 34, neck 12, upper arm 18, forearm 17, thigh 22, shin 22. Head radius 7.5.
-- `P` holds about 55 named poses. `FIG` maps a move's Build name to a pose loop. `WILD_FIG` maps wildcards by regex.
+  - The `2` suffix = the far limb, drawn at 38% opacity.
+- **Segment lengths:** torso 34, neck 12, upper arm 18, forearm 17, thigh 22, shin 22. Head radius 7.5. Scale: about 1.8 cm per unit, so a chair seat is y=86, a step is 10 high, a counter top is y≈61.
+- **Poses are generated.** `tools/poses.py` places hands and feet (`at(x, y)`) and solves the angles so knees and elbows only bend the natural way. Face-up poses with the head on the right are the one exception (the figure is then seen from its other side), so they force the bend side. Run it, then check `debug/poses.html`.
+- `FIG` maps **any level's move name** to `{s: pose loop, p: prop}`. A level without its own entry uses the Build entry. Easier/Harder redraws the figure.
+- `PROPS` are drawn behind the figure; a prop with `tether` draws a towel from that point to the near hand (towel door rows).
 - The animation interpolates between poses: 1150 ms per segment, with 850 ms of movement and an ease-in-out. It respects `prefers-reduced-motion` by showing one static pose.
-- Some poses are approximate (side plank, Cossack and 90/90 really need a front view). Improving these is welcome.
+- Still approximate because they really need a front view: side plank, Cossack squat, 90/90, lateral bounds, jumping jacks.
 - "Watch how ↗" links to a YouTube search for the current level's move name.
 
 ## Sources behind the weekly targets

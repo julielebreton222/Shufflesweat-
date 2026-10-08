@@ -4,6 +4,10 @@
 
 It should feel like the wellness apps people actually use today: soft rounded cards, generous space, big friendly type, gentle gradients, satisfying little animations, a bottom tab bar. The theme lives on top of that, not instead of it. It must never feel like a costume party where you can't find the Start button.
 
+> **Update (Oct 2026): current look.** A pink cowgirl fairy saloon deck on a 1970s retro base (the retro feel comes from [flossgiven.com](https://www.flossgiven.com); we borrow the style only, never that site's logo, photos or lettering). Denim-blue top band with a wavy edge, faint pink gingham page (a star field in dark mode), cream cards, pill buttons with a chunky shadow, **Caprasimo** headings and Figtree body. This replaces the palette and fonts in the tables below; motifs, copy and accessibility rules still apply.
+>
+> Tokens live in `css/styles.css`. Light: page `#FCE4EE`, cards `#FFFBF7`, text navy `#262352`, band denim `#4A74D4`, Start hot pink `#F05094`, "Shake it up" and wildcards cherry red `#F04A5E`, lucky pick and the face-down card back candy pink `#FF9CC4`, selected `#FFC2D9`. Types: Rodeo/Burn red, Ranch Strong/Strength denim `#6B8FE0`, Wild Mustang/Athlete turquoise `#2BB3A3`, Fairy Stretch/Mobility lavender `#B9A6F0`. **Bright colors are fills only and always carry dark text (`--on-fill`)**; cream text on them fails contrast. Built so far: themed names with plain subtitles, boot level icons, hat in the logo, cowgirl hat and ponytail on the stick figure, sheriff-star wildcard badge, star-pattern card back with a rope border for rests, horseshoe on the lucky pick, Yeehaw copy.
+
 ## The big idea: a lucky card deck
 
 The app is already built around face-down cards you flip one at a time. Lean into that:
