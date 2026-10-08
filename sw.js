@@ -1,6 +1,6 @@
 // Offline support. App files load from the network when online (cached copy offline); Google Fonts are cached once.
 // Bump VERSION whenever any app file changes, so phones pick up the new version.
-const VERSION = "v10";
+const VERSION = "v11";
 const CACHE = "shuffle-sweat-" + VERSION;
 const APP_FILES = [
   "./",

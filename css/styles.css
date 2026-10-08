@@ -302,3 +302,4 @@ body.has-tabs .app{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .home-chip{display:inline-flex;align-items:center;gap:5px}
 .home-chip svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .home-chip[aria-current="page"]{background:var(--pop-soft)}
+.ghost.danger{color:var(--ink);border-color:var(--pop);margin-top:4px}

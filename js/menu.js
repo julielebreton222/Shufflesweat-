@@ -106,4 +106,12 @@ $("meSound").onclick=()=>{ $("soundBtn").click(); syncToggles(); };
 $("meVoice").onclick=()=>{ $("voiceBtn").click(); syncToggles(); };
 $("meHelp").onclick=()=>$("helpBtn").click();
 $("meGoals").onclick=openWeek;
+// Start from scratch: delete everything this app saved on the phone, then reopen at the welcome screen.
+$("meReset").onclick=()=>sheet("Start from scratch?",
+  "This deletes everything saved on this phone: your goals, workout history, records, Zero checkmarks, name and measurements. It can't be undone.",
+  "Keep my data",()=>{},
+  "Delete everything and start over",()=>{
+    try{ Object.keys(localStorage).filter(k=>k.startsWith("ss_")).forEach(k=>localStorage.removeItem(k)); }catch(e){}
+    location.reload();
+  });
 renderGreeting();
