@@ -74,7 +74,7 @@ function renderPips(){
 function updateStartLabel(){
   const m=document.querySelector('input[name="mode"]:checked').value;
   const t=document.querySelector('input[name="mins"]:checked').value;
-  $("startBtn").textContent=`Start ${t}-minute ${MODE_NAMES[m]}`;
+  $("startBtn").innerHTML=`Saddle up<small>${t} minutes · ${MODE_NAMES[m]} (${PLAIN[m]})</small>`;
 }
 document.querySelectorAll('input[name="mode"],input[name="mins"]').forEach(i=>i.addEventListener("change",updateStartLabel));
 
@@ -111,8 +111,8 @@ function showCard(){
   if(c.wild) $("title").textContent=c.n;
   $("cue").textContent=c.c;
   renderLevel(c);
-  if(c.choice) $("fig").hidden=true; else setFig(figFor(c));
-  $("boredBtn").innerHTML='I\'m bored<small>Swap this for a wildcard</small>';
+  if(c.choice) $("fig").toggleAttribute("hidden",true); else setFig(figFor(c));
+  $("boredBtn").innerHTML='Shake it up ✦<small>Swap for a wildcard</small>';
   $("skipBtn").textContent="Next card";
   renderPips(); clearTimeout(choiceTimer); stopTimer();
   count=0; $("counter").hidden=!c.key;
@@ -170,16 +170,16 @@ function cardFinished(natural){
   idx++;
   if(idx>=deck.length) return endRound();
   const nxt=deck[idx];
-  startRest(REST[c.wild?"wild":c.m]||10, nxt.finisher?"Last card: flexibility.":"Next card is face down.", "Shake it out. Breathe. Sip water.");
+  startRest(REST[c.wild?"wild":c.m]||10, nxt.finisher?"Last card: flexibility.":"Next card is face down.", "Catch your breath, partner. Shake it out, sip water.");
 }
 function startRest(sec,title,cue){
   phase="rest"; paused=false; $("pauseBtn").textContent="Pause";
   const card=$("card"); card.classList.remove("wild"); card.classList.add("rest"); card.dataset.m="";
   $("kind").classList.remove("switch");
-  $("kind").textContent=`Rest · ${sec}s`; $("title").textContent=title; $("lvl").hidden=true; $("counter").hidden=true; $("fig").hidden=true;
+  $("kind").textContent=`Rest · ${sec}s`; $("title").textContent=title; $("lvl").hidden=true; $("counter").hidden=true; $("fig").toggleAttribute("hidden",true);
   $("cue").textContent=cue; $("choices").hidden=true; setFoot("timer");
   $("skipBtn").textContent="Flip it now";
-  $("boredBtn").innerHTML='I\'m bored<small>Flip a wildcard now</small>';
+  $("boredBtn").innerHTML='Shake it up ✦<small>Flip a wildcard now</small>';
   renderPips(); say(title);
   restStart=performance.now(); restDur=sec;
   startTimer(sec,()=>showCard());
@@ -198,7 +198,7 @@ function endRound(){
   const tip= best ? `Wildcards that keep you going lately: ${WILD_NAMES[best[0]].toLowerCase()}. You'll get more of those.` : "";
   if(round<totalRounds){
     const left=totalRounds-round;
-    $("stamp").textContent= roundPRs?"New record":`Round ${round} of ${totalRounds}`;
+    $("stamp").textContent= roundPRs?"New sheriff in town":"Yeehaw!";
     $("endTitle").textContent= left===1?"One round left.": round*2>=totalRounds?"Past halfway.":"Round done. Nice.";
     $("nextup").hidden=false;
     const nb=ladderFor(round+1);
@@ -207,7 +207,7 @@ function endRound(){
     $("endNote").textContent= tip || "Stopping here still counts.";
     $("againBtn").textContent="Next round"; $("winBtn").textContent="Call it a win";
   } else {
-    $("stamp").textContent= roundPRs?"New record":"Session done";
+    $("stamp").textContent= roundPRs?"New sheriff in town":"Rodeo Queen behavior";
     $("endTitle").textContent= round===totalRounds?`Your ${mins} minutes are done.`:`Bonus round ${round-totalRounds}, done.`;
     $("nextup").hidden=true;
     $("endNote").textContent= tip || "That's the whole session. Anything extra is a bonus.";
@@ -220,7 +220,7 @@ function endAsWin(){
   if(phase!=="end"){ today.rounds++; saveToday(); }
   const finishedAll=round>=totalRounds;
   phase="end"; show("end"); $("nextup").hidden=true; renderSessbar(); renderEndWeek();
-  $("stamp").textContent="It counts"; $("endTitle").textContent= finishedAll?"Session done. Well trained.":"You trained today. That's the win.";
+  $("stamp").textContent="It counts"; $("endTitle").textContent= finishedAll?"Session done. Rodeo Queen behavior.":"You showed up. That counts, cowgirl.";
   fillStats(); $("endNote").textContent="Stopping when you're done is part of the plan.";
   $("againBtn").textContent="Actually, one more round"; $("winBtn").textContent="Back to start"; $("winBtn").onclick=goHome;
   try{wake&&wake.release()}catch(e){}

@@ -138,6 +138,9 @@ function drawPose(p){
   $("nearArm").setAttribute("points",ptsStr(q.arm)); $("farArm").setAttribute("points",ptsStr(q.arm2));
   $("nearLeg").setAttribute("points",ptsStr(q.leg)); $("farLeg").setAttribute("points",ptsStr(q.leg2));
   $("head").setAttribute("cx",q.Hd[0].toFixed(1)); $("head").setAttribute("cy",q.Hd[1].toFixed(1));
+  const hx=q.Hd[0].toFixed(1), hy=q.Hd[1].toFixed(1);
+  $("hat").setAttribute("transform",`translate(${hx},${hy}) rotate(${p.t.toFixed(1)})`);
+  $("pony").setAttribute("transform",`translate(${hx},${hy}) rotate(${p.t.toFixed(1)})`);
 }
 const reduceMotion=(()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}})();
 let figSeq=["stand","armsUp"], figT0=0, figRAF=0;
@@ -148,7 +151,7 @@ function figFor(c){
   return ["stand","armsUp"];
 }
 function figFrame(now){
-  if($("play").hidden||$("fig").hidden){ figRAF=0; return; }
+  if($("play").hidden||$("fig").hasAttribute("hidden")){ figRAF=0; return; }
   const SEG=1150, MOVE=850, n=figSeq.length, t=Math.max(0,now-figT0)/SEG;
   const i=Math.floor(t)%n, f=Math.min(1,((t%1)*SEG)/MOVE), e=.5-.5*Math.cos(Math.PI*f);
   const a=POSE[figSeq[i]], b=POSE[figSeq[(i+1)%n]], o={};
@@ -157,7 +160,7 @@ function figFrame(now){
 }
 function setFig(seq){
   figSeq=seq.filter(k=>POSE[k]); if(!figSeq.length) figSeq=["stand"];
-  $("fig").hidden=false;
+  $("fig").toggleAttribute("hidden",false);
   if(reduceMotion||figSeq.length<2){ drawPose(POSE[figSeq[Math.min(1,figSeq.length-1)]]); return; }
   figT0=performance.now(); if(!figRAF) figRAF=requestAnimationFrame(figFrame);
 }

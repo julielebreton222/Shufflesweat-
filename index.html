@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Shuffle Sweat</title>
 <meta name="description" content="A workout card deck for brains that get bored.">
-<meta name="theme-color" content="#1A9C5C" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0B5A34" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#4A74D4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2B3F8F" media="(prefers-color-scheme: dark)">
 <!-- Installable: opens full screen from the iPhone Home Screen -->
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
@@ -30,7 +30,7 @@
 <body>
 <div class="app">
   <div class="top">
-    <div class="brand">Shuffle<span>Sweat</span></div>
+    <div class="brand"><svg class="brand-hat" viewBox="-14 -16 28 18" aria-hidden="true"><path d="M-6.5-5.5C-7.5-13-4-15-1.5-13.3 0-12.3 0-12.3 1.5-13.3 4-15 7.5-13 6.5-5.5Z"/><path d="M-13.5-6C-11-2.5 11-2.5 13.5-6 11-4.4-11-4.4-13.5-6Z"/></svg>Shuffle<span>Sweat</span><i class="twinkle" aria-hidden="true">✦</i></div>
     <div class="toggles">
       <button class="chip" id="helpBtn">How it works</button>
       <button class="chip" id="soundBtn" aria-pressed="true">Beeps</button>
@@ -41,14 +41,14 @@
   <!-- WELCOME -->
   <section id="welcome">
     <div class="hello">
-      <h1>Welcome to Shuffle Sweat.</h1>
-      <p>A workout deck for brains that get bored. Here's the whole thing:</p>
+      <h1>Howdy, Julie <span class="spark" aria-hidden="true">✦</span></h1>
+      <p>Saddle up. One round counts. Shuffle Sweat is a workout deck for brains that get bored. Here's the whole thing:</p>
     </div>
     <ol class="steps">
       <li><div><b>Set your week once.</b><span>Pick a focus. The app turns health guidelines into weekly targets and suggests what to do each day.</span></div></li>
       <li><div><b>Pick type, minutes and level.</b><span>Or tap the smart pick for today.</span></div></li>
       <li><div><b>Cards flip one at a time.</b><span>Strength moves are reps: do them, tap Done. Cardio and stretches run on a timer.</span></div></li>
-      <li><div><b>Bored? Tap the yellow button.</b><span>You get a wildcard instead. Tap again for a break.</span></div></li>
+      <li><div><b>Bored? Tap Shake it up.</b><span>You get a wildcard instead. Tap again for a break.</span></div></li>
       <li><div><b>Stopping early still counts.</b><span>Every round you finish is a win.</span></div></li>
     </ol>
     <div class="push">
@@ -88,7 +88,7 @@
       <div class="panelhead"><b>This week</b><span class="today" id="daysLeft"></span></div>
       <div id="weekBars"></div>
       <div class="suggest" id="suggest">
-        <span class="label">Smart pick for today</span>
+        <span class="label"><svg class="shoe" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3v8a7 7 0 0 0 14 0V3"/></svg>Lucky pick for today</span>
         <b id="sugTitle"></b>
         <p id="sugWhy"></p>
         <button id="sugBtn">Use this</button>
@@ -98,11 +98,11 @@
     <div>
       <div class="label">Type</div>
       <div class="pick modes" role="radiogroup" aria-label="Workout type">
-        <input type="radio" name="mode" id="m-mix" value="mix" checked><label for="m-mix" class="wide" style="--c:var(--accent)"><b>Surprise mix</b><small>A bit of everything in one deck</small></label>
-        <input type="radio" name="mode" id="m-burn" value="burn"><label for="m-burn" style="--c:var(--burn)"><b>Burn</b><small>HIIT cards that get shorter each round</small></label>
-        <input type="radio" name="mode" id="m-str" value="str"><label for="m-str" style="--c:var(--str)"><b>Strength</b><small>Calisthenics reps and holds</small></label>
-        <input type="radio" name="mode" id="m-ath" value="ath"><label for="m-ath" style="--c:var(--ath)"><b>Athlete</b><small>Jumps, power and control</small></label>
-        <input type="radio" name="mode" id="m-mob" value="mob"><label for="m-mob" style="--c:var(--mob)"><b>Mobility</b><small>Active flexibility, timed</small></label>
+        <input type="radio" name="mode" id="m-mix" value="mix" checked><label for="m-mix" class="wide" style="--c:var(--accent)"><b>Lucky Draw</b><small>A bit of everything in one deck</small></label>
+        <input type="radio" name="mode" id="m-burn" value="burn"><label for="m-burn" style="--c:var(--burn)"><b>Rodeo</b><small>HIIT cardio, cards get shorter each round</small></label>
+        <input type="radio" name="mode" id="m-str" value="str"><label for="m-str" style="--c:var(--str)"><b>Ranch Strong</b><small>Strength: calisthenics reps and holds</small></label>
+        <input type="radio" name="mode" id="m-ath" value="ath"><label for="m-ath" style="--c:var(--ath)"><b>Wild Mustang</b><small>Athletic: jumps, power and control</small></label>
+        <input type="radio" name="mode" id="m-mob" value="mob"><label for="m-mob" style="--c:var(--mob)"><b>Fairy Stretch</b><small>Mobility: active flexibility, timed</small></label>
       </div>
     </div>
     <div>
@@ -116,14 +116,14 @@
     <div>
       <div class="label">Level</div>
       <div class="pick three" role="radiogroup" aria-label="Level">
-        <input type="radio" name="level" id="l-0" value="0"><label for="l-0"><b>Build</b><small>Learning the moves</small></label>
-        <input type="radio" name="level" id="l-1" value="1" checked><label for="l-1"><b>Strong</b><small>Full versions</small></label>
-        <input type="radio" name="level" id="l-2" value="2"><label for="l-2"><b>Beast</b><small>Hardest versions</small></label>
+        <input type="radio" name="level" id="l-0" value="0"><label for="l-0"><svg class="boot" viewBox="0 -4 32 32" aria-hidden="true"><path d="M10 3h9l-.5 13 6.5 4.5c2.5 1.7 1.6 5.5-1.5 5.5H7.5c-1 0-1.5-.8-1.5-1.6V21l3-2.5Z"/><path class="trim" d="M10.2 8h8.5"/></svg><b>Pony</b><small>Easiest: learning the moves</small></label>
+        <input type="radio" name="level" id="l-1" value="1" checked><label for="l-1"><svg class="boot" viewBox="0 -4 32 32" aria-hidden="true"><path d="M10 3h9l-.5 13 6.5 4.5c2.5 1.7 1.6 5.5-1.5 5.5H7.5c-1 0-1.5-.8-1.5-1.6V21l3-2.5Z"/><path class="trim" d="M10.2 8h8.5"/><circle class="spur" cx="4.5" cy="24" r="2.6"/></svg><b>Cowgirl</b><small>Medium: full versions</small></label>
+        <input type="radio" name="level" id="l-2" value="2"><label for="l-2"><svg class="boot" viewBox="0 -4 32 32" aria-hidden="true"><path d="M10 3h9l-.5 13 6.5 4.5c2.5 1.7 1.6 5.5-1.5 5.5H7.5c-1 0-1.5-.8-1.5-1.6V21l3-2.5Z"/><path class="trim" d="M10.2 8h8.5"/><circle class="spur" cx="4.5" cy="24" r="2.6"/><path class="crown" d="M10 2.5 11.5-2 14.5 1 17.5-2 19 2.5Z"/></svg><b>Rodeo Queen</b><small>Hardest versions</small></label>
       </div>
     </div>
     <div class="push">
       <p class="today" id="todayHome"></p>
-      <button class="big" id="startBtn">Start</button>
+      <button class="big" id="startBtn">Saddle up</button>
       <p class="credit">Inspired by Growingannanas HIIT ladders, Natacha Océane's athleticism training, Tom Merrick-style active flexibility and classic calisthenics progressions.</p>
     </div>
   </section>
@@ -137,7 +137,7 @@
       <svg class="fig" id="fig" viewBox="0 -14 200 132" role="img" aria-label="Animated stick figure showing the move">
         <line class="ground" x1="10" y1="111" x2="190" y2="111"></line>
         <g class="far"><polyline id="farArm"></polyline><polyline id="farLeg"></polyline></g>
-        <g class="near"><polyline id="body"></polyline><polyline id="nearArm"></polyline><polyline id="nearLeg"></polyline><circle id="head" r="7.5"></circle></g>
+        <g class="near"><polyline id="body"></polyline><polyline id="nearArm"></polyline><polyline id="nearLeg"></polyline><path id="pony" class="pony" d="M-5-4C-13-3-15 3-12 10"></path><circle id="head" r="7.5"></circle><g id="hat" class="hat"><path d="M-6.5-5.5C-7.5-13-4-15-1.5-13.3 0-12.3 0-12.3 1.5-13.3 4-15 7.5-13 6.5-5.5Z"/><path d="M-13.5-6C-11-2.5 11-2.5 13.5-6 11-4.4-11-4.4-13.5-6Z"/></g></g>
       </svg>
       <p class="cue" id="cue"></p>
       <div class="lvl" id="lvl"><button id="easier">Easier</button><button id="harder">Harder</button><span id="lvlName"></span><a class="watch" id="watch" href="#" target="_blank" rel="noopener">Watch how ↗</a></div>
@@ -155,7 +155,7 @@
       </div>
     </article>
     <div class="controls">
-      <button class="bored" id="boredBtn">I'm bored<small>Swap this for a wildcard</small></button>
+      <button class="bored" id="boredBtn">Shake it up ✦<small>Swap for a wildcard</small></button>
       <button class="small" id="pauseBtn">Pause</button>
       <button class="small" id="skipBtn">Next card</button>
     </div>

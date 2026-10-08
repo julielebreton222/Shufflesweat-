@@ -68,9 +68,11 @@ const GROUP={"Knee push-ups":"push","Pike push-ups":"push","Bent-knee chair dips
  "Split squats":"legs","Assisted pistols":"legs","Single-leg glute bridges":"legs","Single-leg calf raises":"legs","Wall sit":"legs","Squat to calf raise":"legs","Lateral step and stick":"legs","Pogo hops":"legs","Single-leg deadlift (hold wall)":"legs","Reverse lunge to knee drive":"legs","Sprint and drop":"legs","Shuffle and touch":"legs","Skater holds":"legs",
  "Tuck-ups":"core","Tuck hollow hold":"core","Plank shoulder taps":"core","Seated leg lifts":"core","Side plank":"core","Beast hold reaches":"core","Short Copenhagen plank":"core"};
 MOVES.forEach((m,i)=>{m.id=i; if(GROUP[m.n[0]]) m.g=GROUP[m.n[0]];});
-const MODE_NAMES={mix:"Surprise mix",burn:"Burn",str:"Strength",ath:"Athlete",mob:"Mobility"};
-const TYPE_NAMES={burn:"Burn",str:"Strength",ath:"Athlete",mob:"Mobility"};
-const LEVELS=["Build","Strong","Beast"];
+// Themed names, always shown with a plain word (PLAIN) where it matters.
+const MODE_NAMES={mix:"Lucky Draw",burn:"Rodeo",str:"Ranch Strong",ath:"Wild Mustang",mob:"Fairy Stretch"};
+const PLAIN={mix:"a bit of everything",burn:"HIIT cardio",str:"strength",ath:"jumps and power",mob:"flexibility"};
+const TYPE_NAMES={burn:"Rodeo · cardio",str:"Ranch Strong · strength",ath:"Wild Mustang · power",mob:"Fairy Stretch · mobility"};
+const LEVELS=["Pony","Cowgirl","Rodeo Queen"];
 const LADDER=[40,30,20];
 const HOLD={str:40,ath:40,mob:40};
 const REST={burn:10,str:20,ath:20,mob:10,wild:10};
