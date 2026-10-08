@@ -22,11 +22,12 @@ $("startBtn").onclick=()=>{
   level=+document.querySelector('input[name="level"]:checked').value;
   mins=+document.querySelector('input[name="mins"]:checked').value; totalRounds=ROUNDS[mins];
   store.set("ss_level",level); store.set("ss_mode",mode); store.set("ss_mins",mins);
-  round=0; used.clear(); beep(0.0001,.01); startRound();
+  planRun=null; round=0; used.clear(); beep(0.0001,.01); startRound();
 };
 $("boredBtn").onclick=onBored;
 $("pauseBtn").onclick=()=>{ if(paused){paused=false;resumeTimer();$("pauseBtn").textContent="Pause"} else {paused=true;pauseTimer();$("pauseBtn").textContent="Resume"} };
 $("skipBtn").onclick=()=>{ if(phase==="rest"){ stopTimer(); return showCard(); } logPartial(); saveCount(); stopTimer(); clearTimeout(choiceTimer); idx++; if(idx>=deck.length) return endRound(); showCard(); };
+$("planSwitch").onclick=openWeek;
 $("againBtn").onclick=()=>{ $("winBtn").onclick=endAsWin; startRound(); };
 $("winBtn").onclick=endAsWin;
 

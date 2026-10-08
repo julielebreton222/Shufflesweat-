@@ -29,6 +29,7 @@
 <script src="../js/moves.js"></script>
 <script src="../js/poses.js"></script>
 <script src="../js/figure.js"></script>
+<script src="../js/programs.js"></script>
 <script>
 const mk=(seq,prop)=>seq.map(k=>`<div><svg class="fig" viewBox="0 -14 200 132">${typeof figSVG==="function"?figSVG(POSE[k],prop):""}</svg><span>${k}</span></div>`).join("");
 let html="";
@@ -40,6 +41,8 @@ MOVES.forEach(m=>{ let last="";
     html+=card([name,...same].join(" / "),`${TYPE_NAMES[m.m]} · ${LEVELS[lvl]}`,figFor(c),propFor(c)); });
 });
 Object.entries(WILD).forEach(([cat,list])=>{ if(cat==="choice") return; list.forEach(w=>{ const c={wild:cat,...w}; html+=card(w.n,"Wildcard · "+WILD_NAMES[cat],figFor(c),propFor(c)); });});
+Object.values(PLANS).forEach(pl=>pl.weeks[0].days.forEach(d=>(d.ex||[]).forEach(e=>{
+  if(html.includes(`<h3>${e.n}</h3>`)) return; const c={n:[e.n,e.n,e.n],lvl:0}; html+=card(e.n,`${pl.name} · ${d.name}`,figFor(c),propFor(c)); })));
 document.getElementById("grid").innerHTML=html;
 </script>
 </body>

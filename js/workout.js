@@ -59,6 +59,7 @@ function pauseTimer(){ if(!T.running) return; T.running=false; clearInterval(T.i
 function resumeTimer(){ if(T.running||!T.done) return; T.running=true; T.end=performance.now()+T.left*1000; T.id=setInterval(tick,200); }
 
 // state
+let planRun=null;   // {i, name, ex} while playing a day of a set weekly plan
 let mode="mix", level=1, mins=15, totalRounds=3, deck=[], idx=0, round=0, phase="home", paused=false, boredTaps=[], choiceTimer=null, used=new Set(), roundPRs=0, count=0, cardStart=0, emomDone=false;
 
 const SCREENS=["welcome","week","home","play","end"];
@@ -70,6 +71,7 @@ function draw(type,n){
   return weightedShuffle(pool).slice(0,n).map(m=>{used.add(m.id);return {...m,lvl:level}});
 }
 function buildDeck(){
+  if(planRun) return planCards(planRun.ex[round-1],planRun.name);
   if(mode==="mob") return draw("mob",5);
   let main= mode==="mix" ? shuffle([...draw("burn",2),...draw("str",1),...draw("ath",1)]) : draw(mode,4);
   if(Math.random()<.4) main[Math.floor(Math.random()*main.length)]=makeWild();
@@ -82,6 +84,7 @@ const workSecs=c=>c.dur||(c.m==="burn"?ladderFor(round):c.m==="mob"&&mode==="mob
 
 function renderPips(){
   $("pips").innerHTML=deck.map((_,i)=>`<span class="pip ${i<idx?"done":i===idx?"now":""}"></span>`).join("");
+  if(planRun){ $("roundLabel").textContent=`Exercise ${round} of ${totalRounds} · ${PLANS[PLAN.type].name} ${planRun.name}`; return; }
   $("roundLabel").textContent= round<=totalRounds ? `Round ${round} of ${totalRounds} · ${MODE_NAMES[mode]}` : `Bonus round · ${MODE_NAMES[mode]}`;
 }
 function updateStartLabel(){
@@ -100,7 +103,8 @@ function renderLevel(c){
   const has=!c.wild;
   $("lvl").hidden=!has; if(!has) return;
   $("title").textContent=c.n[c.lvl];
-  $("lvlName").textContent=LEVELS[c.lvl];
+  $("lvlName").textContent=c.fixed?`Set ${c.setNo} of ${c.sets}`:LEVELS[c.lvl];
+  $("easier").hidden=$("harder").hidden=!!c.fixed;
   $("easier").disabled=c.lvl===0; $("harder").disabled=c.lvl===2;
   $("watch").href="https://www.youtube.com/results?search_query="+encodeURIComponent(c.n[c.lvl]+" exercise how to");
   if(isReps(c)){ $("repsNum").textContent=repsOf(c); $("repsUnit").textContent=c.s?"reps each side":"reps"; }
@@ -120,7 +124,7 @@ function showCard(){
   card.dataset.m=c.wild?"":c.m;
   card.style.animation="none"; void card.offsetWidth; card.style.animation="";
   const k=$("kind"); k.classList.remove("switch");
-  k.textContent=c.wild?`Wildcard · ${WILD_NAMES[c.wild]}`:c.finisher?"Flexibility finisher":TYPE_NAMES[c.m]+(c.s&&!isReps(c)?" · switch sides at the beep":"");
+  k.textContent=c.wild?`Wildcard · ${WILD_NAMES[c.wild]}`:c.finisher?"Flexibility finisher":(c.fixed?`${PLANS[PLAN.type].name} · ${c.plan}`:TYPE_NAMES[c.m])+(c.s&&!isReps(c)?" · switch sides at the beep":"");
   if(c.wild) $("title").textContent=c.n;
   $("cue").textContent=c.c;
   renderLevel(c);
@@ -183,7 +187,7 @@ function cardFinished(natural){
   idx++;
   if(idx>=deck.length) return endRound();
   const nxt=deck[idx];
-  startRest(REST[c.wild?"wild":c.m]||10, nxt.finisher?"Last card: flexibility.":"Next card is face down.", "Catch your breath, partner. Shake it out, sip water.");
+  startRest(c.rest||REST[c.wild?"wild":c.m]||10, nxt.fixed?`Next: set ${nxt.setNo} of ${nxt.sets}.`:nxt.finisher?"Last card: flexibility.":"Next card is face down.", "Catch your breath, partner. Shake it out, sip water.");
 }
 function startRest(sec,title,cue){
   phase="rest"; paused=false; $("pauseBtn").textContent="Pause";
@@ -209,6 +213,24 @@ function endRound(){
   $("winBtn").onclick=endAsWin;
   const best=Object.entries(wstats).filter(([,s])=>s.f>0).sort((a,b)=>(b[1].f/b[1].u)-(a[1].f/a[1].u))[0];
   const tip= best ? `Wildcards that keep you going lately: ${WILD_NAMES[best[0]].toLowerCase()}. You'll get more of those.` : "";
+  $("againBtn").hidden=false;
+  if(planRun){
+    const left=totalRounds-round, nextEx=planRun.ex[round];
+    $("stamp").textContent= left?"Yeehaw!":"Rodeo Queen behavior";
+    $("nextup").hidden=!left;
+    if(left){
+      $("endTitle").textContent= left===1?"One exercise left.":"Exercise done. Nice.";
+      $("nextTitle").textContent=nextEx.n; $("nextLen").textContent=`${left} to go`;
+      $("endNote").textContent="Stopping here still counts. Your day gets its checkmark.";
+      $("againBtn").textContent="Next exercise"; $("winBtn").textContent="Call it a win";
+    } else {
+      $("endTitle").textContent=`${planRun.name}, done.`;
+      $("endNote").textContent="That's the whole day. Go drink some water, cowgirl.";
+      $("againBtn").hidden=true; $("winBtn").textContent="Finish";
+    }
+    markPlanDay(planRun.i);
+    return;
+  }
   if(round<totalRounds){
     const left=totalRounds-round;
     $("stamp").textContent= roundPRs?"New sheriff in town":"Yeehaw!";
@@ -236,9 +258,10 @@ function endAsWin(){
   $("stamp").textContent="It counts"; $("endTitle").textContent= finishedAll?"Session done. Rodeo Queen behavior.":"You showed up. That counts, cowgirl.";
   fillStats(); $("endNote").textContent="Stopping when you're done is part of the plan.";
   $("againBtn").textContent="Actually, one more round"; $("winBtn").textContent="Back to start"; $("winBtn").onclick=goHome;
+  if(planRun){ markPlanDay(planRun.i); $("againBtn").textContent="Actually, keep going"; $("againBtn").hidden=round>=totalRounds; }
   try{wake&&wake.release()}catch(e){}
 }
-function goHome(){ phase="home"; round=0; used.clear(); show("home"); renderTodayHome(); renderHomeWeek(); }
+function goHome(){ phase="home"; planRun=null; $("againBtn").hidden=false; round=0; used.clear(); show("home"); renderTodayHome(); renderHomeWeek(); }
 
 // bored button
 function onBored(){
