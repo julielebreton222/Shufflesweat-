@@ -19,10 +19,30 @@ Julie has ADHD and kept quitting follow-along workout videos (like Growingannana
 
 ## Current state
 
-- One file: `shuffle-sweat.html`, about 70 KB, vanilla HTML, CSS and JavaScript. No build step, no framework, no dependencies except Google Fonts (Bricolage Grotesque and Figtree, to be replaced by the new design).
-- It was written as a claude.ai artifact. That means it has no `<!doctype>`, `<html>`, `<head>` or `<body>` tags (the host added them). When turning it into a standalone app, add a proper document skeleton with a viewport meta that includes `viewport-fit=cover`.
+- A small installable web app (PWA): vanilla HTML, CSS and JavaScript. No build step, no framework, no dependencies except Google Fonts (Bricolage Grotesque and Figtree, to be replaced by the new design).
+- It started as a single-file claude.ai artifact (`shuffle-sweat.html`, still in the git history) and was split into files without changing how it looks or works.
 - All state lives in `localStorage` (keys below), wrapped in try/catch.
 - Works in light and dark mode through CSS custom properties on `:root`, with a `prefers-color-scheme` block and a `[data-theme]` override.
+
+### Files
+
+| File | What's in it |
+|---|---|
+| `index.html` | Document skeleton, install meta tags, and the markup for every screen |
+| `css/styles.css` | All styles and the color tokens |
+| `js/store.js` | `$` (get element by id) and `store` (safe localStorage) |
+| `js/moves.js` | Data: `MOVES`, `GROUP`, names, timings (`LADDER`, `HOLD`, `REST`, `ROUNDS`) and `WILD` |
+| `js/figure.js` | Stick-figure poses (`P`), move → pose loops (`FIG`, `WILD_FIG`) and the animation |
+| `js/week.js` | Daily log, `credit()`, today's stats, the weekly goals screen, `weightedShuffle()` and `suggestion()` |
+| `js/workout.js` | Wildcard picking, sound and voice, timer, deck building, cards, rests, round end and the bored button |
+| `js/app.js` | Remaining button wiring, first-screen choice, service-worker registration |
+| `manifest.webmanifest`, `sw.js`, `icons/` | Install and offline support. The icon is a placeholder. |
+
+The scripts are **classic scripts that share one global scope**, loaded with `defer` in the order listed in `index.html`. Code that runs at load time may only use things from earlier files; functions can call anything once the page has loaded.
+
+**When you change any file, bump `VERSION` in `sw.js`** (and add new files to `APP_FILES`), otherwise installed copies keep serving the old cached version.
+
+To run locally: `python3 -m http.server 8000` in the repo folder, then open http://localhost:8000. The service worker only runs over http(s), not from a `file://` URL.
 
 ## Screens (all in the one page, toggled with the `hidden` attribute)
 

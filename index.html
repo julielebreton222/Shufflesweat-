@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shuffle Sweat</title>
+<meta name="description" content="A workout card deck for brains that get bored.">
+<meta name="theme-color" content="#F2F0F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14121F" media="(prefers-color-scheme: dark)">
+<!-- Installable: opens full screen from the iPhone Home Screen -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Shuffle Sweat">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+<!-- Scripts share one global scope and run in this order (defer keeps it). -->
+<script defer src="js/store.js"></script>
+<script defer src="js/moves.js"></script>
+<script defer src="js/figure.js"></script>
+<script defer src="js/week.js"></script>
+<script defer src="js/workout.js"></script>
+<script defer src="js/app.js"></script>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="brand">Shuffle<span>Sweat</span></div>
+    <div class="toggles">
+      <button class="chip" id="helpBtn">How it works</button>
+      <button class="chip" id="soundBtn" aria-pressed="true">Beeps</button>
+      <button class="chip" id="voiceBtn" aria-pressed="false">Voice</button>
+    </div>
+  </div>
+
+  <!-- WELCOME -->
+  <section id="welcome">
+    <div class="hello">
+      <h1>Welcome to Shuffle Sweat.</h1>
+      <p>A workout deck for brains that get bored. Here's the whole thing:</p>
+    </div>
+    <ol class="steps">
+      <li><div><b>Set your week once.</b><span>Pick a focus. The app turns health guidelines into weekly targets and suggests what to do each day.</span></div></li>
+      <li><div><b>Pick type, minutes and level.</b><span>Or tap the smart pick for today.</span></div></li>
+      <li><div><b>Cards flip one at a time.</b><span>Strength moves are reps: do them, tap Done. Cardio and stretches run on a timer.</span></div></li>
+      <li><div><b>Bored? Tap the blue button.</b><span>You get a wildcard instead. Tap again for a break.</span></div></li>
+      <li><div><b>Stopping early still counts.</b><span>Every round you finish is a win.</span></div></li>
+    </ol>
+    <div class="push">
+      <button class="big" id="welcomeBtn">Let's set it up</button>
+    </div>
+  </section>
+
+  <!-- WEEK GOALS -->
+  <section id="week" hidden>
+    <div class="weekhead">
+      <h1>Your week</h1>
+      <p>Pick a focus. The targets fill in from the guidelines, and you can change any of them.</p>
+    </div>
+    <div>
+      <div class="label">Main focus</div>
+      <div class="pick focus" role="radiogroup" aria-label="Focus" id="focusPick"></div>
+    </div>
+    <div class="targets" id="targets"></div>
+    <details class="src">
+      <summary>Where these numbers come from</summary>
+      <ul>
+        <li>WHO 2020 and US 2018 guidelines: 75–150 min of vigorous activity a week, or 150–300 moderate, plus strength work for all major muscle groups on 2+ days. More than that brings extra benefit. Short bouts count, there's no 10-minute minimum. <a href="https://odphp.health.gov/sites/default/files/2019-10/PAG_ExecutiveSummary.pdf" target="_blank" rel="noopener">US guidelines</a> · <a href="https://www.acefitness.org/resources/pros/expert-articles/7751/who-releases-new-guidelines-on-physical-activity-and-sedentary-behavior/" target="_blank" rel="noopener">WHO summary</a></li>
+        <li>Pelland et al., Sports Medicine 2025 (67 studies): more weekly hard sets means more muscle and strength, with smaller extra gains as you add more. Training a muscle twice a week helps strength. <a href="https://link.springer.com/article/10.1007/s40279-025-02344-w" target="_blank" rel="noopener">Paper</a></li>
+        <li>ACSM: strength 2–3 days a week with about 48 hours between sessions for the same muscles. Flexibility 2–3 days a week, daily is better, about 60 seconds per muscle group. <a href="https://www.unm.edu/~lkravitz/Article%20folder/ACSMGuidelinesUNM.pdf" target="_blank" rel="noopener">ACSM summary</a></li>
+        <li>Stamatakis et al., Nature Medicine 2022: even three 1–2 minute vigorous bursts a day were linked to much lower mortality in non-exercisers. A 5-minute round is worth doing. <a href="https://www.ukbiobank.ac.uk/publications/association-of-wearable-device-measured-vigorous-intermittent-lifestyle-physical-activity-with-mortality/" target="_blank" rel="noopener">Study</a></li>
+        <li>How the app counts: vigorous minutes are Burn, Athlete and all-out cards plus the short rests between them. A strength day is 6+ hard sets. A mobility day is 90+ seconds of mobility cards.</li>
+      </ul>
+    </details>
+    <div class="push">
+      <button class="big" id="saveWeekBtn">Save my week</button>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+  <section id="home" hidden>
+    <div class="panel" id="weekPanel">
+      <div class="panelhead"><b>This week</b><span class="today" id="daysLeft"></span></div>
+      <div id="weekBars"></div>
+      <div class="suggest" id="suggest">
+        <span class="label">Smart pick for today</span>
+        <b id="sugTitle"></b>
+        <p id="sugWhy"></p>
+        <button id="sugBtn">Use this</button>
+      </div>
+      <button class="linkbtn" id="editWeekBtn" style="justify-self:start">Edit my week</button>
+    </div>
+    <div>
+      <div class="label">Type</div>
+      <div class="pick modes" role="radiogroup" aria-label="Workout type">
+        <input type="radio" name="mode" id="m-mix" value="mix" checked><label for="m-mix" class="wide" style="--c:var(--accent)"><b>Surprise mix</b><small>A bit of everything in one deck</small></label>
+        <input type="radio" name="mode" id="m-burn" value="burn"><label for="m-burn" style="--c:var(--burn)"><b>Burn</b><small>HIIT cards that get shorter each round</small></label>
+        <input type="radio" name="mode" id="m-str" value="str"><label for="m-str" style="--c:var(--str)"><b>Strength</b><small>Calisthenics reps and holds</small></label>
+        <input type="radio" name="mode" id="m-ath" value="ath"><label for="m-ath" style="--c:var(--ath)"><b>Athlete</b><small>Jumps, power and control</small></label>
+        <input type="radio" name="mode" id="m-mob" value="mob"><label for="m-mob" style="--c:var(--mob)"><b>Mobility</b><small>Active flexibility, timed</small></label>
+      </div>
+    </div>
+    <div>
+      <div class="label">Minutes</div>
+      <div class="pick three mins" role="radiogroup" aria-label="Minutes">
+        <input type="radio" name="mins" id="t-5" value="5"><label for="t-5"><b>5</b><small>1 round, quick hit</small></label>
+        <input type="radio" name="mins" id="t-15" value="15" checked><label for="t-15"><b>15</b><small>3 rounds</small></label>
+        <input type="radio" name="mins" id="t-25" value="25"><label for="t-25"><b>25</b><small>5 rounds</small></label>
+      </div>
+    </div>
+    <div>
+      <div class="label">Level</div>
+      <div class="pick three" role="radiogroup" aria-label="Level">
+        <input type="radio" name="level" id="l-0" value="0"><label for="l-0"><b>Build</b><small>Learning the moves</small></label>
+        <input type="radio" name="level" id="l-1" value="1" checked><label for="l-1"><b>Strong</b><small>Full versions</small></label>
+        <input type="radio" name="level" id="l-2" value="2"><label for="l-2"><b>Beast</b><small>Hardest versions</small></label>
+      </div>
+    </div>
+    <div class="push">
+      <p class="today" id="todayHome"></p>
+      <button class="big" id="startBtn">Start</button>
+      <p class="credit">Inspired by Growingannanas HIIT ladders, Natacha Océane's athleticism training, Tom Merrick-style active flexibility and classic calisthenics progressions.</p>
+    </div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" hidden>
+    <div class="meta"><span id="roundLabel">Round 1</span><div class="pips" id="pips"></div></div>
+    <article class="card" id="card">
+      <div class="kind" id="kind">Move</div>
+      <h2 id="title">Squats</h2>
+      <svg class="fig" id="fig" viewBox="0 -14 200 132" role="img" aria-label="Animated stick figure showing the move">
+        <line class="ground" x1="10" y1="111" x2="190" y2="111"></line>
+        <g class="far"><polyline id="farArm"></polyline><polyline id="farLeg"></polyline></g>
+        <g class="near"><polyline id="body"></polyline><polyline id="nearArm"></polyline><polyline id="nearLeg"></polyline><circle id="head" r="7.5"></circle></g>
+      </svg>
+      <p class="cue" id="cue"></p>
+      <div class="lvl" id="lvl"><button id="easier">Easier</button><button id="harder">Harder</button><span id="lvlName"></span><a class="watch" id="watch" href="#" target="_blank" rel="noopener">Watch how ↗</a></div>
+      <div class="choices" id="choices" hidden></div>
+      <div class="foot" id="foot">
+        <div id="repsWrap" class="reps" hidden><b id="repsNum">10</b><span class="unit" id="repsUnit">reps</span></div>
+        <div id="clockWrap">
+          <div class="clock">
+            <div class="secs" id="secs">40<small>s</small></div>
+            <div class="counter" id="counter" hidden><button id="countBtn">+1 · 0</button><span class="best" id="best"></span></div>
+          </div>
+          <div class="bar" style="margin-top:10px"><i id="barFill"></i></div>
+        </div>
+        <button class="done" id="doneBtn" hidden>Done</button>
+      </div>
+    </article>
+    <div class="controls">
+      <button class="bored" id="boredBtn">I'm bored<small>Swap this for a wildcard</small></button>
+      <button class="small" id="pauseBtn">Pause</button>
+      <button class="small" id="skipBtn">Next card</button>
+    </div>
+  </section>
+
+  <!-- BETWEEN ROUNDS / END -->
+  <section id="end" hidden>
+    <span class="stamp" id="stamp">Round done</span>
+    <h1 style="font-size:clamp(32px,9vw,42px)" id="endTitle">That's a full round.</h1>
+    <div class="sessbar" id="sessbar"></div>
+    <div class="stats">
+      <div class="stat"><b id="sRounds">0</b><span>rounds today</span></div>
+      <div class="stat"><b id="sMins">0</b><span>work minutes</span></div>
+      <div class="stat"><b id="sPR">0</b><span>new records</span></div>
+    </div>
+    <div class="panel" id="weekPanel2"><div class="panelhead"><b>This week</b><span class="today" id="daysLeft2"></span></div><div id="weekBars2"></div></div>
+    <div class="nextup" id="nextup"><div><span>Next round</span><br><b id="nextTitle"></b></div><span id="nextLen"></span></div>
+    <p class="note" id="endNote"></p>
+    <div class="push">
+      <button class="big" id="againBtn">Next round</button>
+      <button class="ghost" id="winBtn">Call it a win</button>
+    </div>
+  </section>
+</div>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h2 id="sheetTitle"></h2>
+    <p id="sheetText"></p>
+    <button class="big" id="sheetA"></button>
+    <button class="ghost" id="sheetB"></button>
+  </div>
+</div>
+</body>
+</html>
