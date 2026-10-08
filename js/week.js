@@ -54,6 +54,7 @@ const REG_NAMES={push:"Push",pull:"Pull",legs:"Legs",core:"Core"};
 const DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 let draft=null;
 function renderWeekSetup(){
+  renderPlanPick();
   draft=Object.assign({focus:"health"},FOCUS.health.g,GOALS||{});
   $("focusPick").innerHTML=Object.entries(FOCUS).map(([k,f])=>`<input type="radio" name="focus" id="f-${k}" value="${k}" ${draft.focus===k?"checked":""}><label for="f-${k}"><b>${f.n}</b><small>${f.d}</small></label>`).join("");
   $("focusPick").querySelectorAll("input").forEach(i=>i.onchange=()=>{draft=Object.assign({focus:i.value},FOCUS[i.value].g);renderTargets();});
@@ -102,6 +103,7 @@ function suggestion(){
   return {mode,mins,why};
 }
 function renderHomeWeek(){
+  renderPlan();
   $("weekPanel").hidden=!GOALS; if(!GOALS) return;
   renderWeekBars("weekBars","daysLeft");
   const sg=suggestion();
@@ -110,5 +112,5 @@ function renderHomeWeek(){
   $("sugBtn").onclick=()=>{ $("m-"+sg.mode).checked=true; $("t-"+sg.mins).checked=true; updateStartLabel(); $("sugBtn").textContent="Selected"; $("startBtn").scrollIntoView({behavior:"smooth",block:"center"}); };
 }
 function renderEndWeek(){ $("weekPanel2").hidden=!GOALS; if(GOALS) renderWeekBars("weekBars2","daysLeft2"); }
-$("saveWeekBtn").onclick=()=>{ GOALS=draft; store.set("ss_goals",GOALS); store.set("ss_seen",1); goHome(); };
+$("saveWeekBtn").onclick=()=>{ PLAN.type=draftPlan; savePlan(); GOALS=draft; store.set("ss_goals",GOALS); store.set("ss_seen",1); goHome(); };
 $("editWeekBtn").onclick=openWeek;

@@ -37,6 +37,7 @@ Julie has ADHD and kept quitting follow-along workout videos (like Growingannana
 | `tools/poses.py` | Builds poses from where the hands and feet go, with joints that only bend the natural way |
 | `debug/poses.html` | Every move and level, every pose, with props. Open it to check the figures |
 | `js/week.js` | Daily log, `credit()`, today's stats, the weekly goals screen, `weightedShuffle()` and `suggestion()` |
+| `js/programs.js` | Set weekly plans (`PLANS`, e.g. **Zero**), the Week type menu, the plan's days on the home screen, and `planCards()` which turns one exercise into one card per set. Add a day's exercises here; each exercise needs a figure entry in `FIG` |
 | `js/workout.js` | Wildcard picking, sound and voice, timer, deck building, cards, rests, round end and the bored button |
 | `js/app.js` | Remaining button wiring, first-screen choice, service-worker registration |
 | `manifest.webmanifest`, `sw.js`, `icons/` | Install and offline support. The icon is a placeholder. |
@@ -116,6 +117,10 @@ How work is credited (`credit()`):
 - mobility: `need / daysLeft`
 
 The highest score wins. Mix is chosen when cardio and strength are both urgent. Minutes are scaled to the per-day need. When everything is met, it suggests 5 easy mobility minutes.
+
+### Set weekly plans
+
+`ss_plan = { type: "shuffle" | "zero", done: { "<Monday YYYY-MM-DD>": [day indexes] } }`. A plan day plays one exercise per round (so "Call it a win" works between exercises) and one card per set, with the plan's own rest between sets. Easier/Harder are hidden on plan cards; Shake it up still swaps in a wildcard. A day gets its checkmark when it ends, early or not. Zero still needs: the 12th Full Body (day 1) exercise and the Day 6 HIIT. The third Day 1 exercise name was hidden in the screenshot and is a guess ("Alternating reverse lunge with rotation").
 
 ### Other localStorage keys
 

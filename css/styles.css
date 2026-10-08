@@ -238,3 +238,18 @@ details.src a{color:var(--ink);text-decoration-color:var(--accent);text-decorati
 .sessbar{display:flex;gap:6px}
 .sessbar i{flex:1;height:10px;border-radius:5px;background:var(--line)}
 .sessbar i.on{background:var(--good)}
+
+/* Set weekly plan (Zero) */
+.plandays{display:grid;gap:8px}
+.planday{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;border:2px solid transparent;background:var(--bg);color:var(--ink);border-radius:18px;padding:12px 14px;cursor:pointer;font:inherit;min-height:56px}
+.planday span:first-child{display:grid;gap:1px;min-width:0}
+.planday b{font:400 18px var(--display)}
+.planday small{color:var(--muted);font-size:13px}
+.planday:disabled{cursor:default;opacity:.55}
+.planday .tick,.planday .go{flex:none;width:34px;height:34px;border-radius:999px;display:grid;place-items:center}
+.planday .tick{background:var(--accent)}
+.planday .go{border:2px solid var(--ink)}
+.planday svg{width:18px;height:18px;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.planday .tick svg{stroke:var(--on-fill)} .planday .go svg{stroke:var(--ink)}
+.planday.done{border-color:color-mix(in srgb,var(--accent) 50%,transparent)}
+.orhead{font-size:24px;margin-bottom:10px}
