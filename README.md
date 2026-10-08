@@ -4,6 +4,7 @@ A home-workout card deck for brains that get bored. Cards flip one at a time, ro
 
 It's a plain HTML/CSS/JavaScript app that installs on an iPhone Home Screen and works offline. Everything is saved on the device only.
 
+- **Live app:** https://julielebreton222.github.io/Shufflesweat-/ (open in Safari on iPhone, then Share → Add to Home Screen)
 - **Run it locally:** `python3 -m http.server 8000`, then open http://localhost:8000
 - **How it works and how to change it:** see [`CLAUDE.md`](CLAUDE.md)
 - **Where the design is going:** see [`DESIGN.md`](DESIGN.md)
