@@ -8,11 +8,25 @@ function showTab(id){
   if(id==="me") renderMe();
 }
 document.querySelectorAll("#tabbar button").forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+// Home, from the title or the Home button at the top. Mid-workout it asks first, so a stray tap never loses a session.
+function headHome(){
+  if(phase==="work"||phase==="rest"){
+    const wasPaused=paused; pauseTimer(); clearTimeout(choiceTimer);
+    sheet("Head home?","Stopping now still counts as a win today.",
+      "End as a win and go home",()=>{ endAsWin(); goHome(); },
+      "Keep going",()=>{ if(!wasPaused) resumeTimer(); });
+    return;
+  }
+  if(phase==="end"){ try{wake&&wake.release()}catch(e){} }
+  store.set("ss_seen",1); goHome();
+}
+$("homeBtn").onclick=headHome; $("brandBtn").onclick=headHome;
 // show() calls this so the menu appears only on its own screens, never during a workout
 function syncTabbar(id){
   const on=TABS.includes(id);
   $("tabbar").hidden=!on; document.body.classList.toggle("has-tabs",on);
   document.querySelectorAll("#tabbar button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===id?"page":"false"));
+  $("homeBtn").setAttribute("aria-current",id==="home"?"page":"false");
 }
 
 // ---------- profile ----------
