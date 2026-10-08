@@ -253,3 +253,46 @@ details.src a{color:var(--ink);text-decoration-color:var(--accent);text-decorati
 .planday .tick svg{stroke:var(--on-fill)} .planday .go svg{stroke:var(--ink)}
 .planday.done{border-color:color-mix(in srgb,var(--accent) 50%,transparent)}
 .orhead{font-size:24px;margin-bottom:10px}
+
+/* Bottom menu (Today · Week · Me), hidden during workouts */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;gap:4px;
+  background:var(--surface);border-top:2px solid var(--line);padding:6px max(12px,env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-right));
+  box-shadow:0 -8px 24px var(--shadow)}
+.tabbar button{flex:1;max-width:150px;min-height:52px;border:0;background:transparent;color:var(--muted);border-radius:16px;display:grid;justify-items:center;gap:2px;padding:6px 4px;font:700 12px var(--body);cursor:pointer}
+.tabbar svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-current="page"]{color:var(--ink);background:var(--pop-soft)}
+.tabbar button[aria-current="page"] svg{stroke:var(--accent)}
+body.has-tabs .app{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+
+/* Week tab */
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.sday{background:var(--surface);border-radius:14px;padding:8px 2px;display:grid;justify-items:center;gap:2px;min-width:0;border:2px solid transparent}
+.sday b{font:400 16px var(--display)}
+.sday span{font-size:12px;font-weight:800;min-height:16px;font-variant-numeric:tabular-nums}
+.sday.did{background:var(--accent);color:var(--on-fill)}
+.sday.now{border-color:var(--ink)}
+.sday.later{opacity:.55}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Me tab */
+.field{display:grid;gap:6px;min-width:0;position:relative}
+.field input{width:100%;min-width:0;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:12px 14px;font:600 17px var(--body)}
+.field input:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.field small{position:absolute;right:14px;bottom:13px;color:var(--muted);font-weight:700;font-size:14px;pointer-events:none}
+.measures{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.measures input{padding-right:42px}
+.seg{display:flex;background:var(--bg);border-radius:999px;padding:3px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{padding:5px 10px;border-radius:999px;font:700 12px var(--body);color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg input:checked+label{background:var(--ink);color:var(--surface)}
+.seg input:focus-visible+label{outline:3px solid var(--ink);outline-offset:2px}
+.history{display:grid;gap:6px}
+.hrow{display:grid;grid-template-columns:64px 1fr;gap:8px;font-size:14px;align-items:baseline}
+.hrow span{color:var(--muted);min-width:0}
+.hrow em{font-style:normal;font-weight:800;color:var(--ink)}
+.badge{font:800 11px var(--body);letter-spacing:.06em;text-transform:uppercase;background:var(--pop-soft);color:var(--ink);padding:4px 9px;border-radius:999px;white-space:nowrap}
+.ghost:disabled{opacity:.45;cursor:default}
+.settings{display:flex;flex-wrap:wrap;gap:8px}
+.settings .chip{border:2px solid var(--line);min-height:40px;padding:8px 14px;font-size:14px}
+.greet{font:400 24px var(--display);margin:0}
+.greet span{color:var(--accent)}

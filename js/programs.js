@@ -103,23 +103,28 @@ function renderPlanPick(){
 // ---------- the plan's week on the home screen ----------
 const CHECK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
 const CHEV='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
-function renderPlan(){
-  const p=PLANS[PLAN.type], on=!!p;
-  $("planPanel").hidden=!on; $("shuffleHead").hidden=!on; $("suggest").hidden=on;
-  if(!on) return;
+// The plan's days as tappable rows, into any container (Today and the Week tab both use it).
+function planDaysInto(el,after){
+  const p=PLANS[PLAN.type]; if(!p) return;
   const done=planDoneThisWeek(), days=p.weeks[0].days;
-  $("planTitle").textContent=`${p.name} · Week 1`;
-  $("planDays").innerHTML=days.map((d,i)=>{
+  el.innerHTML=days.map((d,i)=>{
     const isDone=done.includes(i), title=d.rest?"Rest Day":d.name;
     const sub=d.rest?(isDone?"Rested. Nice.":"Tap when you've rested"):!d.ex?"Not added yet":d.rounds?`${d.mins} minutes · ${d.ex.length} moves × ${d.rounds} rounds`:`${d.mins} minutes · ${d.ex.length} exercises`;
     const icon=isDone?`<span class="tick">${CHECK}</span>`:d.ex?`<span class="go">${CHEV}</span>`:"";
     return `<button class="planday ${isDone?"done":""}" data-i="${i}" ${!d.rest&&!d.ex?"disabled":""}><span><b>Day ${i+1}: ${title}</b><small>${sub}</small></span>${icon}</button>`;
   }).join("");
-  $("planDays").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{
     const i=+b.dataset.i, d=days[i];
-    if(d.rest){ markPlanDay(i,!planDoneThisWeek().includes(i)); renderPlan(); return; }
+    if(d.rest){ markPlanDay(i,!planDoneThisWeek().includes(i)); after&&after(); return; }
     startPlanDay(i);
   });
+}
+function renderPlan(){
+  const p=PLANS[PLAN.type], on=!!p;
+  $("planPanel").hidden=!on; $("shuffleHead").hidden=!on; $("suggest").hidden=on;
+  if(!on) return;
+  $("planTitle").textContent=`${p.name} · Week 1`;
+  planDaysInto($("planDays"),renderPlan);
 }
 function startPlanDay(i){
   const d=PLANS[PLAN.type].weeks[0].days[i];

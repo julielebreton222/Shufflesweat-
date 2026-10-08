@@ -62,8 +62,8 @@ function resumeTimer(){ if(T.running||!T.done) return; T.running=true; T.end=per
 let planRun=null;   // {i, name, ex} while playing a day of a set weekly plan
 let mode="mix", level=1, mins=15, totalRounds=3, deck=[], idx=0, round=0, phase="home", paused=false, boredTaps=[], choiceTimer=null, used=new Set(), roundPRs=0, count=0, cardStart=0, emomDone=false;
 
-const SCREENS=["welcome","week","home","play","end"];
-function show(id){ SCREENS.forEach(s=>$(s).hidden=s!==id); window.scrollTo(0,0); }
+const SCREENS=["welcome","week","home","progress","me","play","end"];
+function show(id){ SCREENS.forEach(s=>$(s).hidden=s!==id); window.scrollTo(0,0); if(typeof syncTabbar==="function") syncTabbar(id); }
 
 function draw(type,n){
   let pool=MOVES.filter(m=>m.m===type&&!used.has(m.id));
@@ -262,7 +262,7 @@ function endAsWin(){
   if(planRun){ markPlanDay(planRun.i); $("againBtn").textContent="Actually, keep going"; $("againBtn").hidden=round>=totalRounds; }
   try{wake&&wake.release()}catch(e){}
 }
-function goHome(){ phase="home"; planRun=null; $("againBtn").hidden=false; round=0; used.clear(); show("home"); renderTodayHome(); renderHomeWeek(); }
+function goHome(){ window.dispatchEvent(new Event("ss:home")); phase="home"; planRun=null; $("againBtn").hidden=false; round=0; used.clear(); show("home"); renderTodayHome(); renderHomeWeek(); }
 
 // bored button
 function onBored(){

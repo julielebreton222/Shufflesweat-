@@ -1,6 +1,6 @@
-// Offline support. The app files are cached on install; Google Fonts are cached the first time they load.
+// Offline support. App files load from the network when online (cached copy offline); Google Fonts are cached once.
 // Bump VERSION whenever any app file changes, so phones pick up the new version.
-const VERSION = "v7";
+const VERSION = "v9";
 const CACHE = "shuffle-sweat-" + VERSION;
 const APP_FILES = [
   "./",
@@ -14,6 +14,7 @@ const APP_FILES = [
   "js/week.js",
   "js/programs.js",
   "js/workout.js",
+  "js/menu.js",
   "js/app.js",
   "icons/apple-touch-icon.png",
   "icons/icon-192.png",
@@ -40,17 +41,20 @@ self.addEventListener("fetch", e => {
   const isFont = url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com";
   if (url.origin !== location.origin && !isFont) return;
 
-  // Pages: try the network first so updates show up, fall back to the cached app offline.
-  if (req.mode === "navigate") {
+  // App files: network first, so an update shows up on the next open; the cache is the offline fallback.
+  if (url.origin === location.origin) {
     e.respondWith(
-      fetch(req)
-        .then(res => { const copy = res.clone(); caches.open(CACHE).then(c => c.put("index.html", copy)); return res; })
-        .catch(() => caches.match("index.html"))
+      fetch(req.url, { cache: "no-cache" })   // revalidate with GitHub instead of trusting the browser cache
+        .then(res => {
+          if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req.mode === "navigate" ? "index.html" : req, copy)); }
+          return res;
+        })
+        .catch(() => caches.match(req.mode === "navigate" ? "index.html" : req, { ignoreSearch: true }))
     );
     return;
   }
 
-  // Everything else: cache first, then network (and remember it).
+  // Google Fonts: cache first, they never change.
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
       if (res.ok || res.type === "opaque") { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }

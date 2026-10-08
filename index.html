@@ -27,6 +27,7 @@
 <script defer src="js/week.js"></script>
 <script defer src="js/programs.js"></script>
 <script defer src="js/workout.js"></script>
+<script defer src="js/menu.js"></script>
 <script defer src="js/app.js"></script>
 </head>
 <body>
@@ -97,6 +98,7 @@
 
   <!-- SETUP -->
   <section id="home" hidden>
+    <p class="greet" id="greet" hidden></p>
     <div class="panel" id="planPanel" hidden>
       <div class="panelhead"><b id="planTitle">Zero · Week 1</b><button class="linkbtn" id="planSwitch">Change week</button></div>
       <div class="plandays" id="planDays"></div>
@@ -143,6 +145,65 @@
       <p class="today" id="todayHome"></p>
       <button class="big" id="startBtn">Saddle up</button>
       <p class="credit">Inspired by Growingannanas HIIT ladders, Natacha Océane's athleticism training, Tom Merrick-style active flexibility and classic calisthenics progressions.</p>
+    </div>
+  </section>
+
+  <!-- WEEK PROGRESS (tab) -->
+  <section id="progress" hidden>
+    <div class="weekhead">
+      <h1>Your week</h1>
+      <p id="progDays"></p>
+    </div>
+    <div class="strip" id="progStrip" aria-label="This week, Monday to Sunday"></div>
+    <div class="panel" id="progPlan" hidden>
+      <div class="panelhead"><b id="progPlanTitle"></b><span class="today" id="progPlanCount"></span></div>
+      <div class="plandays" id="progPlanDays"></div>
+    </div>
+    <div class="panel" id="progGoals">
+      <div class="panelhead"><b>Weekly goals</b><span id="progDays2" hidden></span><button class="linkbtn" id="progEditGoals">Edit my goals</button></div>
+      <div id="progBars"></div>
+    </div>
+    <div>
+      <div class="label">Week type</div>
+      <div class="pick focus" role="radiogroup" aria-label="Week type" id="progPlanPick"></div>
+    </div>
+  </section>
+
+  <!-- ME (tab) -->
+  <section id="me" hidden>
+    <div class="weekhead"><h1>Me</h1></div>
+    <div class="panel">
+      <label class="field"><span class="label">Your name</span><input id="meName" type="text" autocomplete="given-name" maxlength="30" placeholder="What should the app call you?"></label>
+    </div>
+    <div class="panel">
+      <div class="panelhead"><b>Measurements</b>
+        <div class="seg" role="radiogroup" aria-label="Units"><input type="radio" name="units" id="u-metric" value="metric"><label for="u-metric">cm · kg</label><input type="radio" name="units" id="u-imperial" value="imperial"><label for="u-imperial">in · lb</label></div>
+      </div>
+      <div class="measures">
+        <label class="field"><span class="label">Height</span><input id="mHeight" type="number" inputmode="decimal" min="0" step="0.1"><small class="unit-h"></small></label>
+        <label class="field"><span class="label">Weight</span><input id="mWeight" type="number" inputmode="decimal" min="0" step="0.1"><small class="unit-w"></small></label>
+        <label class="field"><span class="label">Waist</span><input id="mWaist" type="number" inputmode="decimal" min="0" step="0.1"><small class="unit-h"></small></label>
+        <label class="field"><span class="label">Hips</span><input id="mHips" type="number" inputmode="decimal" min="0" step="0.1"><small class="unit-h"></small></label>
+        <label class="field"><span class="label">Chest</span><input id="mChest" type="number" inputmode="decimal" min="0" step="0.1"><small class="unit-h"></small></label>
+        <label class="field"><span class="label">Thigh</span><input id="mThigh" type="number" inputmode="decimal" min="0" step="0.1"><small class="unit-h"></small></label>
+      </div>
+      <button class="ghost" id="mSave">Save today's measurements</button>
+      <p class="note" id="mSaved" aria-live="polite"></p>
+      <div class="history" id="mHistory"></div>
+    </div>
+    <div class="panel health">
+      <div class="panelhead"><b>Apple Health</b><span class="badge">App Store version</span></div>
+      <p class="note">Apple only lets App Store apps read and write Apple Health. When Shuffle Sweat becomes an App Store app, this is where you'll connect it: workouts saved to Health, and your weight read from it. Until then, log your measurements above. They stay on this phone.</p>
+      <button class="ghost" disabled>Connect Apple Health</button>
+    </div>
+    <div class="panel">
+      <div class="panelhead"><b>Settings</b></div>
+      <div class="settings">
+        <button class="chip" id="meSound" aria-pressed="true">Beeps</button>
+        <button class="chip" id="meVoice" aria-pressed="false">Read cards aloud</button>
+        <button class="chip" id="meHelp">How it works</button>
+        <button class="chip" id="meGoals">Edit my goals</button>
+      </div>
     </div>
   </section>
 
@@ -199,6 +260,12 @@
     </div>
   </section>
 </div>
+
+<nav class="tabbar" id="tabbar" aria-label="Menu" hidden>
+  <button data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M12 8.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg><span>Today</span></button>
+  <button data-tab="progress"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 9h16M8 2v4M16 2v4"/><path d="M8.5 14.5l2 2 4.5-4.5"/></svg><span>Week</span></button>
+  <button data-tab="me"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9.5C6.6 6 8.5 4.5 10.5 5.8L12 6.6l1.5-.8C15.5 4.5 17.4 6 17 9.5"/><path d="M3.5 10c3 2 14 2 17 0"/><circle cx="12" cy="14" r="2.6"/><path d="M6.5 21c.8-2.6 3-4 5.5-4s4.7 1.4 5.5 4"/></svg><span>Me</span></button>
+</nav>
 
 <div class="scrim" id="scrim" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">

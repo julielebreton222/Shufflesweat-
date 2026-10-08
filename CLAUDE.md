@@ -40,11 +40,12 @@ Julie has ADHD and kept quitting follow-along workout videos (like Growingannana
 | `js/programs.js` | Set weekly plans (`PLANS`, e.g. **Zero**), the Week type menu, the plan's days on the home screen, and `planCards()` which turns one exercise into one card per set. Add a day's exercises here; each exercise needs a figure entry in `FIG` |
 | `js/workout.js` | Wildcard picking, sound and voice, timer, deck building, cards, rests, round end and the bored button |
 | `js/app.js` | Remaining button wiring, first-screen choice, service-worker registration |
+| `js/menu.js` | Bottom menu (Today · Week · Me, hidden during workouts), the Week progress tab (Mon–Sun strip, plan days, goal bars, week type switch) and the Me tab (name, measurements, Apple Health note, settings) |
 | `manifest.webmanifest`, `sw.js`, `icons/` | Install and offline support. The icon is a placeholder. |
 
 The scripts are **classic scripts that share one global scope**, loaded with `defer` in the order listed in `index.html`. Code that runs at load time may only use things from earlier files; functions can call anything once the page has loaded.
 
-**When you change any file, bump `VERSION` in `sw.js`** (and add new files to `APP_FILES`), otherwise installed copies keep serving the old cached version.
+**When you change any file, bump `VERSION` in `sw.js`** and add new files to `APP_FILES`. App files are network-first (revalidated with `cache: "no-cache"`), so online users always get the latest; the cache is the offline fallback. When a new service worker takes over, the page reloads itself, but waits until the workout is over.
 
 To run locally: `python3 -m http.server 8000` in the repo folder, then open http://localhost:8000. The service worker only runs over http(s), not from a `file://` URL.
 
@@ -121,6 +122,10 @@ The highest score wins. Mix is chosen when cardio and strength are both urgent. 
 ### Set weekly plans
 
 `ss_plan = { type: "shuffle" | "zero", done: { "<Monday YYYY-MM-DD>": [day indexes] } }`. A plan day plays one exercise per round (so "Call it a win" works between exercises) and one card per set, with the plan's own rest between sets. Easier/Harder are hidden on plan cards; Shake it up still swaps in a wildcard. A day gets its checkmark when it ends, early or not. A day with `rounds: N` is a circuit (each exercise once per round). Zero still needs: the 12th Full Body (Day 1) exercise, and weeks 2+. The third Day 1 exercise name was hidden in the screenshot and is a guess ("Alternating reverse lunge with rotation").
+
+### Profile
+
+`ss_profile = { name, units: "metric" | "imperial", height }`, `ss_measure = [{ d: "YYYY-MM-DD", weight, waist, hips, chest, thigh }]` (one entry per day, oldest first). Apple Health can't be reached from a web app; the Me tab says so, and it becomes real with an App Store build (Capacitor + a HealthKit plugin).
 
 ### Other localStorage keys
 

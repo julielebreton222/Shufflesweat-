@@ -38,4 +38,12 @@ else goHome();
 renderTodayHome();
 
 // offline support (only works when served over http/https)
-if("serviceWorker" in navigator&&location.protocol!=="file:"){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+if("serviceWorker" in navigator&&location.protocol!=="file:"){
+  const hadSW=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register("sw.js").then(r=>{ try{r.update()}catch(e){} }).catch(()=>{});
+  // A new version took over: reload to show it, unless a workout is running (then on the way home).
+  let pendingReload=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(!hadSW) return; if(phase==="work"||phase==="rest") pendingReload=true; else location.reload(); });
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") navigator.serviceWorker.getRegistration().then(r=>r&&r.update()).catch(()=>{}); });
+  window.addEventListener("ss:home",()=>{ if(pendingReload) location.reload(); });
+}
