@@ -71,7 +71,7 @@ function draw(type,n){
   return weightedShuffle(pool).slice(0,n).map(m=>{used.add(m.id);return {...m,lvl:level}});
 }
 function buildDeck(){
-  if(planRun) return planCards(planRun.ex[round-1],planRun.name);
+  if(planRun) return planRun.rounds?circuitCards(planRun,round):planCards(planRun.ex[round-1],planRun.name);
   if(mode==="mob") return draw("mob",5);
   let main= mode==="mix" ? shuffle([...draw("burn",2),...draw("str",1),...draw("ath",1)]) : draw(mode,4);
   if(Math.random()<.4) main[Math.floor(Math.random()*main.length)]=makeWild();
@@ -84,7 +84,7 @@ const workSecs=c=>c.dur||(c.m==="burn"?ladderFor(round):c.m==="mob"&&mode==="mob
 
 function renderPips(){
   $("pips").innerHTML=deck.map((_,i)=>`<span class="pip ${i<idx?"done":i===idx?"now":""}"></span>`).join("");
-  if(planRun){ $("roundLabel").textContent=`Exercise ${round} of ${totalRounds} · ${PLANS[PLAN.type].name} ${planRun.name}`; return; }
+  if(planRun){ $("roundLabel").textContent=`${planRun.rounds?"Round":"Exercise"} ${round} of ${totalRounds} · ${PLANS[PLAN.type].name} ${planRun.name}`; return; }
   $("roundLabel").textContent= round<=totalRounds ? `Round ${round} of ${totalRounds} · ${MODE_NAMES[mode]}` : `Bonus round · ${MODE_NAMES[mode]}`;
 }
 function updateStartLabel(){
@@ -103,7 +103,7 @@ function renderLevel(c){
   const has=!c.wild;
   $("lvl").hidden=!has; if(!has) return;
   $("title").textContent=c.n[c.lvl];
-  $("lvlName").textContent=c.fixed?`Set ${c.setNo} of ${c.sets}`:LEVELS[c.lvl];
+  $("lvlName").textContent=c.fixed?`${c.circuit?"Round":"Set"} ${c.setNo} of ${c.sets}`:LEVELS[c.lvl];
   $("easier").hidden=$("harder").hidden=!!c.fixed;
   $("easier").disabled=c.lvl===0; $("harder").disabled=c.lvl===2;
   $("watch").href="https://www.youtube.com/results?search_query="+encodeURIComponent(c.n[c.lvl]+" exercise how to");
@@ -187,7 +187,7 @@ function cardFinished(natural){
   idx++;
   if(idx>=deck.length) return endRound();
   const nxt=deck[idx];
-  startRest(c.rest||REST[c.wild?"wild":c.m]||10, nxt.fixed?`Next: set ${nxt.setNo} of ${nxt.sets}.`:nxt.finisher?"Last card: flexibility.":"Next card is face down.", "Catch your breath, partner. Shake it out, sip water.");
+  startRest(c.rest||REST[c.wild?"wild":c.m]||10, nxt.fixed?(nxt.circuit?`Next: ${nxt.n[0]}.`:`Next: set ${nxt.setNo} of ${nxt.sets}.`):nxt.finisher?"Last card: flexibility.":"Next card is face down.", "Catch your breath, partner. Shake it out, sip water.");
 }
 function startRest(sec,title,cue){
   phase="rest"; paused=false; $("pauseBtn").textContent="Pause";
@@ -215,14 +215,15 @@ function endRound(){
   const tip= best ? `Wildcards that keep you going lately: ${WILD_NAMES[best[0]].toLowerCase()}. You'll get more of those.` : "";
   $("againBtn").hidden=false;
   if(planRun){
-    const left=totalRounds-round, nextEx=planRun.ex[round];
+    const left=totalRounds-round, nextEx=planRun.rounds?{n:`Round ${round+1}: the same ${planRun.ex.length} moves`}:planRun.ex[round];
     $("stamp").textContent= left?"Yeehaw!":"Rodeo Queen behavior";
     $("nextup").hidden=!left;
     if(left){
-      $("endTitle").textContent= left===1?"One exercise left.":"Exercise done. Nice.";
+      const unit=planRun.rounds?"round":"exercise";
+      $("endTitle").textContent= left===1?`One ${unit} left.`:`${unit[0].toUpperCase()+unit.slice(1)} done. Nice.`;
       $("nextTitle").textContent=nextEx.n; $("nextLen").textContent=`${left} to go`;
       $("endNote").textContent="Stopping here still counts. Your day gets its checkmark.";
-      $("againBtn").textContent="Next exercise"; $("winBtn").textContent="Call it a win";
+      $("againBtn").textContent=planRun.rounds?"Next round":"Next exercise"; $("winBtn").textContent="Call it a win";
     } else {
       $("endTitle").textContent=`${planRun.name}, done.`;
       $("endNote").textContent="That's the whole day. Go drink some water, cowgirl.";

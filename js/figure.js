@@ -201,7 +201,12 @@ const FIG={
  "Plank walk in to pike":F(["plank","pike"]),
  "Bird dog":F(["quad","birdDog"]),
  "Chameleon sit backs":F(["bear","frogBack"]),
- "Knee corkscrew":F(["hollowTuck","tuckUp"])
+ "Knee corkscrew":F(["hollowTuck","tuckUp"]),
+ "Rocket launches":F(["squat","jump"]),
+ "Chameleon sit backs with alternating knee tap":F(["bear","frogBack","bearTap"]),
+ "Invisible ball slams":F(["jump","squatHands"]),
+ "Crab marches":F(["tabletop","tabletopOne"]),
+ "Alternating knee strikes":F(["armsUp","kneeDrive"])
 };
 // wildcards, by name
 const WILD_FIG=[

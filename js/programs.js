@@ -3,6 +3,7 @@
 // sets, reps OR dur (seconds of work), side 1 = reps or time are per side (timed cards beep "switch sides" at halfway),
 // rest = seconds of rest after each set.
 // A day with ex:null hasn't been added yet; rest:true is a rest day.
+// A day with rounds:N is a circuit: every exercise once (one set each) per round, N rounds.
 const REP_REST=45;   // rest between rep sets when the plan doesn't say
 const PLANS={
  zero:{
@@ -64,7 +65,13 @@ const PLANS={
     {n:"Knee corkscrew",m:"str",g:"core",sets:3,reps:12,c:"12 total, 6 per side. Lying on your back, knees up, circle and twist your knees to one side, then the other."},
     {n:"Russian bicycle twists",m:"str",g:"core",sets:3,dur:30,rest:60,c:"Lean back with feet up, twist and bring the opposite elbow to knee. Feet down to make it easier."}
    ]},
-   {name:"HIIT",mins:15,ex:null},
+   {name:"HIIT",mins:15,rounds:3,ex:[
+    {n:"Rocket launches",m:"burn",g:"legs",sets:1,dur:30,rest:30,c:"Sink into a squat, then explode up and reach high like you're launching off the floor. Land soft."},
+    {n:"Chameleon sit backs with alternating knee tap",m:"burn",g:"core",sets:1,dur:30,rest:30,c:"From a low crawl, sit your hips back, come forward and tap one knee in, then the other. Core on, push through the legs."},
+    {n:"Invisible ball slams",m:"burn",g:"core",sets:1,dur:30,rest:30,c:"Reach tall with an imaginary ball, then slam it down hard as you drop into a squat. Super explosive."},
+    {n:"Crab marches",m:"burn",g:"legs",sets:1,dur:30,rest:30,c:"In a crab position with hips high, march one foot up, then the other. Don't let the hips sag."},
+    {n:"Alternating knee strikes",m:"burn",g:"core",sets:1,dur:30,rest:30,c:"Stand tall, reach your arms up, then pull your hands down as you drive one knee up. Switch quickly."}
+   ]},
    {rest:true}
   ]}]
  }
@@ -104,7 +111,7 @@ function renderPlan(){
   $("planTitle").textContent=`${p.name} · Week 1`;
   $("planDays").innerHTML=days.map((d,i)=>{
     const isDone=done.includes(i), title=d.rest?"Rest Day":d.name;
-    const sub=d.rest?(isDone?"Rested. Nice.":"Tap when you've rested"):d.ex?`${d.mins} minutes · ${d.ex.length} exercises`:"Not added yet";
+    const sub=d.rest?(isDone?"Rested. Nice.":"Tap when you've rested"):!d.ex?"Not added yet":d.rounds?`${d.mins} minutes · ${d.ex.length} moves × ${d.rounds} rounds`:`${d.mins} minutes · ${d.ex.length} exercises`;
     const icon=isDone?`<span class="tick">${CHECK}</span>`:d.ex?`<span class="go">${CHEV}</span>`:"";
     return `<button class="planday ${isDone?"done":""}" data-i="${i}" ${!d.rest&&!d.ex?"disabled":""}><span><b>Day ${i+1}: ${title}</b><small>${sub}</small></span>${icon}</button>`;
   }).join("");
@@ -116,6 +123,10 @@ function renderPlan(){
 }
 function startPlanDay(i){
   const d=PLANS[PLAN.type].weeks[0].days[i];
-  planRun={i,name:d.name,ex:d.ex}; mode="plan"; mins=d.mins; totalRounds=d.ex.length;
+  planRun={i,name:d.name,ex:d.ex,rounds:d.rounds||0}; mode="plan"; mins=d.mins; totalRounds=d.rounds||d.ex.length;
   round=0; used.clear(); beep(0.0001,.01); startRound();
+}
+// One round of a circuit day: every exercise once, labelled with the round number.
+function circuitCards(run,r){
+  return run.ex.map(ex=>({...planCards({...ex,sets:1},run.name)[0],setNo:r,sets:run.rounds,circuit:1}));
 }
