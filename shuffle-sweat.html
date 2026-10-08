@@ -1,0 +1,1025 @@
+<title>Shuffle Sweat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;600;700&display=swap">
+<style>
+/* Layout: one phone-width column. Welcome → setup → face-up card; controls sit under the thumb. */
+:root{
+  --bg:#F2F0F7; --surface:#FFFFFF; --ink:#1E1B33; --muted:#625E7A; --line:#DDD8EA;
+  --accent:#FF5A36; --accent-ink:#FFFFFF; --pop:#3B3BD9; --pop-soft:#E4E3FB;
+  --wild:#FFC93C; --wild-ink:#2A2100; --good:#1F8F62; --shadow:rgba(30,27,51,.12);
+  --burn:#FF5A36; --str:#3B3BD9; --ath:#0E8F8A; --mob:#B4479A;
+  --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14121F; --surface:#1F1C2E; --ink:#F1EFFA; --muted:#A6A1C2; --line:#34304A;
+  --accent:#FF6A48; --accent-ink:#1A0C07; --pop:#9494FF; --pop-soft:#2A2850;
+  --wild:#FFD25E; --wild-ink:#2A2100; --good:#3FC48F; --shadow:rgba(0,0,0,.45);
+  --burn:#FF7A5C; --str:#9C9CFF; --ath:#3FC8C2; --mob:#E07BCB; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14121F; --surface:#1F1C2E; --ink:#F1EFFA; --muted:#A6A1C2; --line:#34304A;
+  --accent:#FF6A48; --accent-ink:#1A0C07; --pop:#9494FF; --pop-soft:#2A2850;
+  --wild:#FFD25E; --wild-ink:#2A2100; --good:#3FC48F; --shadow:rgba(0,0,0,.45);
+  --burn:#FF7A5C; --str:#9C9CFF; --ath:#3FC8C2; --mob:#E07BCB; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.app{max-width:460px;margin:0 auto;padding-inline:16px;padding-block:20px 28px;min-height:100%;display:flex;flex-direction:column;gap:20px}
+h1,h2{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1.05;text-wrap:balance;margin:0}
+p{margin:0}
+[hidden]{display:none!important}
+section{display:contents}
+section[hidden]{display:none!important}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-family:var(--display);font-weight:800;font-size:18px}
+.brand span{color:var(--accent)}
+.toggles{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 13px var(--body);padding:6px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--pop-soft);color:var(--pop);border-color:transparent}
+button{font-family:var(--body)}
+button:focus-visible,.pick input:focus-visible+label{outline:3px solid var(--pop);outline-offset:3px}
+
+/* Welcome */
+.hello h1{font-size:clamp(36px,11vw,50px)}
+.hello p{color:var(--muted);margin-top:10px;max-width:34ch;font-size:17px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;background:var(--surface);border-radius:16px;padding:14px}
+.steps li::before{counter-increment:s;content:counter(s);width:36px;height:36px;border-radius:10px;background:var(--pop-soft);color:var(--pop);font:800 18px var(--display);display:grid;place-items:center}
+.steps b{display:block;font-weight:700}
+.steps span{color:var(--muted);font-size:15px}
+.steps li:nth-child(4)::before{background:var(--pop);color:var(--surface)}
+.steps li:nth-child(5)::before{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)}
+
+/* Setup */
+.label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pick{display:grid;gap:10px;margin-top:8px}
+.pick.modes{grid-template-columns:1fr 1fr}
+.pick.three{grid-template-columns:repeat(3,1fr)}
+.pick input{position:absolute;opacity:0;pointer-events:none}
+.pick label{display:flex;flex-direction:column;gap:2px;padding:12px;border-radius:14px;background:var(--surface);border:2px solid var(--line);cursor:pointer;min-width:0;position:relative}
+.pick label b{font-family:var(--display);font-size:18px;line-height:1.15}
+.pick label small{color:var(--muted);font-size:13px;line-height:1.3}
+.pick input:checked+label{border-color:var(--pop);background:var(--pop-soft)}
+.pick.modes label{padding-left:22px}
+.pick.modes label::before{content:"";position:absolute;left:10px;top:14px;bottom:14px;width:4px;border-radius:2px;background:var(--c,var(--muted))}
+.pick.modes .wide{grid-column:1/-1}
+.pick.mins label b{font-size:26px;font-variant-numeric:tabular-nums}
+.today{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+.credit{color:var(--muted);font-size:13px}
+.big{display:block;width:100%;border:0;border-radius:16px;padding:18px;font:800 20px var(--display);cursor:pointer;background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 0 color-mix(in srgb,var(--accent) 60%,var(--ink))}
+.big:active{transform:translateY(3px);box-shadow:0 3px 0 color-mix(in srgb,var(--accent) 60%,var(--ink))}
+.ghost{display:block;width:100%;border:2px solid var(--line);background:transparent;color:var(--ink);border-radius:16px;padding:14px;font:700 16px var(--body);cursor:pointer}
+.push{margin-top:auto;display:grid;gap:12px}
+
+/* Card */
+.meta{display:flex;justify-content:space-between;align-items:center;gap:10px;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px;font-weight:600}
+.pips{display:flex;gap:6px;flex:none}
+.pip{width:20px;height:6px;border-radius:3px;background:var(--line)}
+.pip.done{background:var(--good)}
+.pip.now{background:var(--accent)}
+.card{--c:var(--accent);position:relative;background:var(--surface);border-radius:24px;padding:22px 22px 20px;box-shadow:0 14px 34px var(--shadow);display:flex;flex-direction:column;gap:12px;min-height:360px;overflow:hidden;border-top:8px solid var(--c);animation:flip .45s cubic-bezier(.2,.9,.3,1.2)}
+.card[data-m="burn"]{--c:var(--burn)} .card[data-m="str"]{--c:var(--str)} .card[data-m="ath"]{--c:var(--ath)} .card[data-m="mob"]{--c:var(--mob)}
+.card.wild{background:var(--wild);color:var(--wild-ink);--c:var(--wild-ink)}
+.card.wild .cue,.card.wild .kind,.card.wild .best,.card.wild .unit{color:var(--wild-ink)}
+.card.wild .bar{background:color-mix(in srgb,var(--wild-ink) 15%,transparent)}
+@keyframes flip{from{transform:rotateY(70deg) scale(.95);opacity:.3}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion: reduce){.card{animation:none}}
+.kind{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
+.kind.switch{color:var(--accent)}
+.card h2{font-size:clamp(30px,9vw,42px)}
+.cue{color:var(--muted);font-size:17px;max-width:32ch}
+.lvl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lvl button{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:6px 12px;font:700 13px var(--body);cursor:pointer}
+.lvl button:disabled{opacity:.35;cursor:default}
+.lvl span{font-size:13px;color:var(--muted);font-weight:600}
+.fig{width:100%;max-width:100%;height:auto;max-height:130px;display:block;background:color-mix(in srgb,var(--c) 7%,transparent);border-radius:14px}
+.fig polyline{fill:none;stroke:var(--c);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.fig .far polyline{opacity:.38}
+.fig circle{fill:var(--c)}
+.fig .ground{stroke:var(--line);stroke-width:2}
+.card.wild .fig{background:color-mix(in srgb,var(--wild-ink) 8%,transparent)}
+.card.wild .fig .ground{stroke:color-mix(in srgb,var(--wild-ink) 25%,transparent)}
+.watch{margin-left:auto;font:700 13px var(--body);color:var(--c);text-decoration:none;padding:6px 0}
+.card.wild .watch{color:var(--wild-ink)}
+.foot{margin-top:auto;display:grid;gap:10px}
+.clock{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.secs{font-family:var(--display);font-weight:800;font-size:64px;line-height:.9;font-variant-numeric:tabular-nums}
+.secs small{font-size:18px;font-weight:500;margin-left:2px}
+.reps{display:flex;align-items:baseline;gap:8px}
+.reps b{font-family:var(--display);font-weight:800;font-size:72px;line-height:.9;font-variant-numeric:tabular-nums;color:var(--c)}
+.unit{font:700 18px var(--body);color:var(--muted)}
+.done{border:0;border-radius:16px;background:var(--c);color:var(--surface);font:800 22px var(--display);padding:16px;cursor:pointer;width:100%}
+.card.wild .done{background:var(--wild-ink);color:var(--wild)}
+.counter{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.counter button{border:0;border-radius:16px;background:var(--wild-ink);color:var(--wild);font:800 22px var(--display);padding:14px 20px;cursor:pointer;font-variant-numeric:tabular-nums;min-width:110px}
+.best{font-size:13px;font-weight:700}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--c);border-radius:5px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.choices button{border:2px solid var(--wild-ink);background:transparent;color:var(--wild-ink);border-radius:14px;padding:16px 10px;font:800 18px var(--display);cursor:pointer}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.small{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:12px;font:700 15px var(--body);cursor:pointer}
+.small:disabled{opacity:.4;cursor:default}
+.bored{grid-column:1/-1;border:0;border-radius:18px;padding:18px;cursor:pointer;background:var(--pop);color:#fff;font:800 22px var(--display);box-shadow:0 6px 0 color-mix(in srgb,var(--pop) 55%,#000)}
+:root[data-theme="dark"] .bored{color:#12102A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bored{color:#12102A}}
+.bored:active{transform:translateY(3px);box-shadow:0 3px 0 color-mix(in srgb,var(--pop) 55%,#000)}
+.bored small{display:block;font:600 13px var(--body);opacity:.85;margin-top:2px}
+.rest{background:transparent;border:2px dashed var(--line);border-top:8px solid var(--line);box-shadow:none}
+
+/* Sheet */
+.scrim{position:fixed;inset:0;background:color-mix(in srgb,var(--ink) 45%,transparent);display:flex;align-items:flex-end;justify-content:center;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:10}
+.sheet{background:var(--surface);color:var(--ink);border-radius:22px;padding:22px;max-width:460px;width:100%;display:grid;gap:14px;box-shadow:0 20px 50px var(--shadow)}
+.sheet h2{font-size:28px}
+.sheet p{color:var(--muted)}
+
+/* End */
+.stamp{display:inline-block;align-self:flex-start;font:800 14px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--good);border:2px solid var(--good);border-radius:8px;padding:4px 10px;transform:rotate(-4deg)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--surface);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font:800 28px var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted);font-weight:600}
+.note{color:var(--muted);font-size:15px}
+.nextup{background:var(--surface);border-radius:14px;padding:14px;display:flex;justify-content:space-between;gap:12px;align-items:center;font-variant-numeric:tabular-nums}
+.nextup b{font-family:var(--display);font-size:20px}
+.nextup span{color:var(--muted);font-size:14px}
+/* Week */
+.weekhead h1{font-size:clamp(32px,9.5vw,44px)}
+.weekhead p{color:var(--muted);margin-top:8px;max-width:36ch}
+.pick.focus{grid-template-columns:1fr 1fr}
+.targets{display:grid;gap:10px}
+.target{background:var(--surface);border-radius:16px;padding:14px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.target b{font-weight:700}
+.target .why{grid-column:1/-1;color:var(--muted);font-size:13px;line-height:1.35}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:800 18px var(--display);cursor:pointer}
+.stepper output{min-width:58px;text-align:center;font:800 20px var(--display);font-variant-numeric:tabular-nums}
+.stepper output small{display:block;font:600 11px var(--body);color:var(--muted)}
+details.src{background:var(--surface);border-radius:14px;padding:12px 14px;font-size:14px;color:var(--muted)}
+details.src summary{cursor:pointer;font-weight:700;color:var(--ink)}
+details.src ul{margin:8px 0 0;padding-left:18px;display:grid;gap:6px}
+details.src a{color:var(--pop)}
+.panel{background:var(--surface);border-radius:18px;padding:16px;display:grid;gap:12px}
+.panelhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.panelhead b{font:800 18px var(--display)}
+.linkbtn{border:0;background:none;color:var(--pop);font:700 14px var(--body);cursor:pointer;padding:4px 0}
+.goal{display:grid;gap:5px}
+.goal .row{display:flex;justify-content:space-between;gap:10px;font-size:14px;font-weight:600}
+.goal .row span:last-child{font-variant-numeric:tabular-nums;color:var(--muted)}
+.goal .track{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.goal .track i{display:block;height:100%;border-radius:4px;background:var(--c)}
+.goal.met .row span:last-child{color:var(--good)}
+.regions{display:flex;flex-wrap:wrap;gap:6px}
+.regions span{font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;background:var(--bg);color:var(--muted);font-variant-numeric:tabular-nums}
+.regions span.met{color:var(--good)}
+.suggest{border:2px solid var(--pop);background:var(--pop-soft);border-radius:14px;padding:12px 14px;display:grid;gap:6px}
+.suggest .label{color:var(--pop)}
+.suggest b{font:800 20px var(--display)}
+.suggest p{font-size:14px;color:var(--muted)}
+.suggest button{justify-self:start;border:0;border-radius:10px;background:var(--pop);color:var(--surface);font:700 14px var(--body);padding:8px 14px;cursor:pointer}
+.sessbar{display:flex;gap:6px}
+.sessbar i{flex:1;height:8px;border-radius:4px;background:var(--line)}
+.sessbar i.on{background:var(--good)}
+</style>
+
+<div class="app">
+  <div class="top">
+    <div class="brand">Shuffle<span>Sweat</span></div>
+    <div class="toggles">
+      <button class="chip" id="helpBtn">How it works</button>
+      <button class="chip" id="soundBtn" aria-pressed="true">Beeps</button>
+      <button class="chip" id="voiceBtn" aria-pressed="false">Voice</button>
+    </div>
+  </div>
+
+  <!-- WELCOME -->
+  <section id="welcome">
+    <div class="hello">
+      <h1>Welcome to Shuffle Sweat.</h1>
+      <p>A workout deck for brains that get bored. Here's the whole thing:</p>
+    </div>
+    <ol class="steps">
+      <li><div><b>Set your week once.</b><span>Pick a focus. The app turns health guidelines into weekly targets and suggests what to do each day.</span></div></li>
+      <li><div><b>Pick type, minutes and level.</b><span>Or tap the smart pick for today.</span></div></li>
+      <li><div><b>Cards flip one at a time.</b><span>Strength moves are reps: do them, tap Done. Cardio and stretches run on a timer.</span></div></li>
+      <li><div><b>Bored? Tap the blue button.</b><span>You get a wildcard instead. Tap again for a break.</span></div></li>
+      <li><div><b>Stopping early still counts.</b><span>Every round you finish is a win.</span></div></li>
+    </ol>
+    <div class="push">
+      <button class="big" id="welcomeBtn">Let's set it up</button>
+    </div>
+  </section>
+
+  <!-- WEEK GOALS -->
+  <section id="week" hidden>
+    <div class="weekhead">
+      <h1>Your week</h1>
+      <p>Pick a focus. The targets fill in from the guidelines, and you can change any of them.</p>
+    </div>
+    <div>
+      <div class="label">Main focus</div>
+      <div class="pick focus" role="radiogroup" aria-label="Focus" id="focusPick"></div>
+    </div>
+    <div class="targets" id="targets"></div>
+    <details class="src">
+      <summary>Where these numbers come from</summary>
+      <ul>
+        <li>WHO 2020 and US 2018 guidelines: 75–150 min of vigorous activity a week, or 150–300 moderate, plus strength work for all major muscle groups on 2+ days. More than that brings extra benefit. Short bouts count, there's no 10-minute minimum. <a href="https://odphp.health.gov/sites/default/files/2019-10/PAG_ExecutiveSummary.pdf" target="_blank" rel="noopener">US guidelines</a> · <a href="https://www.acefitness.org/resources/pros/expert-articles/7751/who-releases-new-guidelines-on-physical-activity-and-sedentary-behavior/" target="_blank" rel="noopener">WHO summary</a></li>
+        <li>Pelland et al., Sports Medicine 2025 (67 studies): more weekly hard sets means more muscle and strength, with smaller extra gains as you add more. Training a muscle twice a week helps strength. <a href="https://link.springer.com/article/10.1007/s40279-025-02344-w" target="_blank" rel="noopener">Paper</a></li>
+        <li>ACSM: strength 2–3 days a week with about 48 hours between sessions for the same muscles. Flexibility 2–3 days a week, daily is better, about 60 seconds per muscle group. <a href="https://www.unm.edu/~lkravitz/Article%20folder/ACSMGuidelinesUNM.pdf" target="_blank" rel="noopener">ACSM summary</a></li>
+        <li>Stamatakis et al., Nature Medicine 2022: even three 1–2 minute vigorous bursts a day were linked to much lower mortality in non-exercisers. A 5-minute round is worth doing. <a href="https://www.ukbiobank.ac.uk/publications/association-of-wearable-device-measured-vigorous-intermittent-lifestyle-physical-activity-with-mortality/" target="_blank" rel="noopener">Study</a></li>
+        <li>How the app counts: vigorous minutes are Burn, Athlete and all-out cards plus the short rests between them. A strength day is 6+ hard sets. A mobility day is 90+ seconds of mobility cards.</li>
+      </ul>
+    </details>
+    <div class="push">
+      <button class="big" id="saveWeekBtn">Save my week</button>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+  <section id="home" hidden>
+    <div class="panel" id="weekPanel">
+      <div class="panelhead"><b>This week</b><span class="today" id="daysLeft"></span></div>
+      <div id="weekBars"></div>
+      <div class="suggest" id="suggest">
+        <span class="label">Smart pick for today</span>
+        <b id="sugTitle"></b>
+        <p id="sugWhy"></p>
+        <button id="sugBtn">Use this</button>
+      </div>
+      <button class="linkbtn" id="editWeekBtn" style="justify-self:start">Edit my week</button>
+    </div>
+    <div>
+      <div class="label">Type</div>
+      <div class="pick modes" role="radiogroup" aria-label="Workout type">
+        <input type="radio" name="mode" id="m-mix" value="mix" checked><label for="m-mix" class="wide" style="--c:var(--accent)"><b>Surprise mix</b><small>A bit of everything in one deck</small></label>
+        <input type="radio" name="mode" id="m-burn" value="burn"><label for="m-burn" style="--c:var(--burn)"><b>Burn</b><small>HIIT cards that get shorter each round</small></label>
+        <input type="radio" name="mode" id="m-str" value="str"><label for="m-str" style="--c:var(--str)"><b>Strength</b><small>Calisthenics reps and holds</small></label>
+        <input type="radio" name="mode" id="m-ath" value="ath"><label for="m-ath" style="--c:var(--ath)"><b>Athlete</b><small>Jumps, power and control</small></label>
+        <input type="radio" name="mode" id="m-mob" value="mob"><label for="m-mob" style="--c:var(--mob)"><b>Mobility</b><small>Active flexibility, timed</small></label>
+      </div>
+    </div>
+    <div>
+      <div class="label">Minutes</div>
+      <div class="pick three mins" role="radiogroup" aria-label="Minutes">
+        <input type="radio" name="mins" id="t-5" value="5"><label for="t-5"><b>5</b><small>1 round, quick hit</small></label>
+        <input type="radio" name="mins" id="t-15" value="15" checked><label for="t-15"><b>15</b><small>3 rounds</small></label>
+        <input type="radio" name="mins" id="t-25" value="25"><label for="t-25"><b>25</b><small>5 rounds</small></label>
+      </div>
+    </div>
+    <div>
+      <div class="label">Level</div>
+      <div class="pick three" role="radiogroup" aria-label="Level">
+        <input type="radio" name="level" id="l-0" value="0"><label for="l-0"><b>Build</b><small>Learning the moves</small></label>
+        <input type="radio" name="level" id="l-1" value="1" checked><label for="l-1"><b>Strong</b><small>Full versions</small></label>
+        <input type="radio" name="level" id="l-2" value="2"><label for="l-2"><b>Beast</b><small>Hardest versions</small></label>
+      </div>
+    </div>
+    <div class="push">
+      <p class="today" id="todayHome"></p>
+      <button class="big" id="startBtn">Start</button>
+      <p class="credit">Inspired by Growingannanas HIIT ladders, Natacha Océane's athleticism training, Tom Merrick-style active flexibility and classic calisthenics progressions.</p>
+    </div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" hidden>
+    <div class="meta"><span id="roundLabel">Round 1</span><div class="pips" id="pips"></div></div>
+    <article class="card" id="card">
+      <div class="kind" id="kind">Move</div>
+      <h2 id="title">Squats</h2>
+      <svg class="fig" id="fig" viewBox="0 -14 200 132" role="img" aria-label="Animated stick figure showing the move">
+        <line class="ground" x1="10" y1="111" x2="190" y2="111"></line>
+        <g class="far"><polyline id="farArm"></polyline><polyline id="farLeg"></polyline></g>
+        <g class="near"><polyline id="body"></polyline><polyline id="nearArm"></polyline><polyline id="nearLeg"></polyline><circle id="head" r="7.5"></circle></g>
+      </svg>
+      <p class="cue" id="cue"></p>
+      <div class="lvl" id="lvl"><button id="easier">Easier</button><button id="harder">Harder</button><span id="lvlName"></span><a class="watch" id="watch" href="#" target="_blank" rel="noopener">Watch how ↗</a></div>
+      <div class="choices" id="choices" hidden></div>
+      <div class="foot" id="foot">
+        <div id="repsWrap" class="reps" hidden><b id="repsNum">10</b><span class="unit" id="repsUnit">reps</span></div>
+        <div id="clockWrap">
+          <div class="clock">
+            <div class="secs" id="secs">40<small>s</small></div>
+            <div class="counter" id="counter" hidden><button id="countBtn">+1 · 0</button><span class="best" id="best"></span></div>
+          </div>
+          <div class="bar" style="margin-top:10px"><i id="barFill"></i></div>
+        </div>
+        <button class="done" id="doneBtn" hidden>Done</button>
+      </div>
+    </article>
+    <div class="controls">
+      <button class="bored" id="boredBtn">I'm bored<small>Swap this for a wildcard</small></button>
+      <button class="small" id="pauseBtn">Pause</button>
+      <button class="small" id="skipBtn">Next card</button>
+    </div>
+  </section>
+
+  <!-- BETWEEN ROUNDS / END -->
+  <section id="end" hidden>
+    <span class="stamp" id="stamp">Round done</span>
+    <h1 style="font-size:clamp(32px,9vw,42px)" id="endTitle">That's a full round.</h1>
+    <div class="sessbar" id="sessbar"></div>
+    <div class="stats">
+      <div class="stat"><b id="sRounds">0</b><span>rounds today</span></div>
+      <div class="stat"><b id="sMins">0</b><span>work minutes</span></div>
+      <div class="stat"><b id="sPR">0</b><span>new records</span></div>
+    </div>
+    <div class="panel" id="weekPanel2"><div class="panelhead"><b>This week</b><span class="today" id="daysLeft2"></span></div><div id="weekBars2"></div></div>
+    <div class="nextup" id="nextup"><div><span>Next round</span><br><b id="nextTitle"></b></div><span id="nextLen"></span></div>
+    <p class="note" id="endNote"></p>
+    <div class="push">
+      <button class="big" id="againBtn">Next round</button>
+      <button class="ghost" id="winBtn">Call it a win</button>
+    </div>
+  </section>
+</div>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h2 id="sheetTitle"></h2>
+    <p id="sheetText"></p>
+    <button class="big" id="sheetA"></button>
+    <button class="ghost" id="sheetB"></button>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+// m: burn | str | ath | mob. n: [Build, Strong, Beast].
+// r: reps per level (tap Done). No r = timed. s: one side at a time.
+const MOVES=[
+ // BURN (timed, HIIT ladder)
+ {m:"burn",n:["Step-back burpees","Burpees","Burpee tuck jumps"],c:"Chest to the floor, jump back up. Keep moving the whole time."},
+ {m:"burn",n:["Squat pulses","Jump squats","180° jump squats"],c:"Sit deep, drive through your heels. Land soft and go again."},
+ {m:"burn",n:["Fast reverse lunges","Jumping lunges","Jumping lunge + knee drive"],c:"Switch legs every rep. Back knee almost touches the floor."},
+ {m:"burn",n:["Mountain climbers","Cross-body climbers","Spider climbers"],c:"Shoulders over wrists. Drive the knees as fast as you can."},
+ {m:"burn",n:["High knees","High knees + punches","Sprint high knees"],c:"Knees to hip height, arms pumping. This is a sprint."},
+ {m:"burn",n:["Jumping jacks","Star jumps","Seal jacks + squat"],c:"Explode out wide, land soft, straight back up."},
+ {m:"burn",n:["Step-out plank jacks","Plank jacks","Plank jack + push-up"],c:"Hips level, core tight. Feet out and in."},
+ {m:"burn",n:["Skaters","Skater + floor touch","Skater + hold and hop"],c:"Leap side to side, land on one foot, swing your arms across."},
+ {m:"burn",n:["Squat thrusts","Sprawls","Sprawl + jump"],c:"Hands down, feet back, hips drop, feet in, stand. Fast."},
+ {m:"burn",n:["Up-down planks on knees","Up-down planks","Up-down plank + jack"],c:"Forearms to hands and back. Don't let the hips rock."},
+ {m:"burn",n:["Speed squats","Squat + calf raise jump","Squat jump + tuck"],c:"Full depth every rep. Stand tall or jump at the top."},
+ {m:"burn",n:["Fast feet","Fast feet + drop","Fast feet + sprawl"],c:"Tiny quick steps on the balls of your feet. Drop down every few seconds."},
+ // STRENGTH (reps, holds timed)
+ {m:"str",n:["Knee push-ups","Push-ups","Archer push-ups"],r:[10,12,10],c:"Body in one line, elbows about 45°. Chest all the way down."},
+ {m:"str",n:["Pike push-ups","Feet-up pike push-ups","Deficit pike push-ups"],r:[8,10,8],c:"Hips high, lower your head between your hands. Deficit: hands on two thick books."},
+ {m:"str",n:["Bent-knee chair dips","Straight-leg dips","Feet-up dips"],r:[10,12,12],c:"Hands on a sturdy chair. Lower until elbows hit 90°, press up."},
+ {m:"str",n:["Split squats","Bulgarian split squats","Bulgarian + 2s pause"],r:[10,10,8],s:1,c:"Back foot on a chair for Bulgarian. Front knee tracks over toes."},
+ {m:"str",n:["Assisted pistols","Pistol to chair","Pistol squats"],r:[6,5,5],s:1,c:"Hold a door frame if you need. Control the way down."},
+ {m:"str",n:["Single-leg glute bridges","Single-leg hip thrusts","Hip thrust + 3s hold"],r:[12,12,8],s:1,c:"Shoulders on the couch for thrusts. Squeeze the glute at the top."},
+ {m:"str",n:["Prone Y-raises","Superman pull-downs","Table rows"],r:[12,12,10],c:"Squeeze shoulder blades together. Rows: lie under a sturdy table and pull your chest up to it."},
+ {m:"str",n:["Towel door rows","Towel rows, feet closer","Single-arm towel rows"],r:[10,12,8],c:"Loop a towel round both handles of a closed, sturdy door. Lean back, pull your chest to the door."},
+ {m:"str",n:["Prone reverse snow angels","Superman + snow angel","Prone W-to-Y lifts"],r:[10,10,10],c:"Face down, arms off the floor. Sweep them slowly, squeezing your upper back the whole time."},
+ {m:"str",n:["Tuck-ups","V-ups","Slow V-ups"],r:[12,12,10],c:"Reach for your toes, lower with control. No flopping back down."},
+ {m:"str",n:["Downdog to cobra","Hindu push-ups","Dive-bomber push-ups"],r:[8,8,8],c:"Swoop from hips high, chest low along the floor, up into a cobra."},
+ {m:"str",n:["Single-leg calf raises","Single-leg on a step","Step raise, 3s lower"],r:[12,15,10],s:1,c:"Full height at the top. Use a step for a bigger range."},
+ {m:"str",n:["Tuck hollow hold","Hollow body hold","Hollow rocks"],c:"Lower back glued to the floor. Ribs down, arms by your ears."},
+ {m:"str",n:["Plank shoulder taps","Bear crawl","Bear crawl + taps"],c:"Knees an inch off the floor, back flat. Don't let the hips sway."},
+ {m:"str",n:["Plank lean","Planche lean","Planche lean + pulses"],c:"Fingers point out or back. Lean your shoulders past your hands."},
+ {m:"str",n:["Seated leg lifts","Tuck L-sit","L-sit"],c:"Hands on the floor or two chairs, push down hard and lift your legs."},
+ {m:"str",n:["Side plank","Side plank hip dips","Star side plank"],s:1,c:"Hips stacked and high. Switch sides at the beep."},
+ {m:"str",n:["Wall sit","Wall sit, arms overhead","Single-leg wall sit"],c:"Thighs parallel to the floor. Breathe through it."},
+ // ATHLETE (reps)
+ {m:"ath",n:["Squat to calf raise","Broad jump, stick it","Broad jump + 180"],r:[10,6,6],c:"Swing the arms, jump far, land and freeze for a second. Walk back."},
+ {m:"ath",n:["Lateral step and stick","Lateral bounds","Bound, stick, 2s hold"],r:[10,10,8],c:"Push off one leg, land on the other. Each landing is one rep."},
+ {m:"ath",n:["Pogo hops","Tuck jumps","Tuck jump + squat"],r:[20,10,8],c:"Stiff ankles, bounce off the floor. Knees to chest for tucks."},
+ {m:"ath",n:["Single-leg deadlift (hold wall)","Single-leg deadlift","Single-leg deadlift + hop"],r:[8,8,8],s:1,c:"Hinge at the hip, back leg straight behind you. Hips square."},
+ {m:"ath",n:["Beast hold reaches","Beast kick-throughs","Kick-through + crab reach"],r:[10,12,10],c:"From all fours with knees up, thread one leg under, switch fast."},
+ {m:"ath",n:["Incline plyo push-ups","Plyo push-ups","Clap push-ups"],r:[8,8,6],c:"Push so hard your hands leave the surface. Kitchen counter for incline."},
+ {m:"ath",n:["Reverse lunge to knee drive","Lunge, knee drive + hop","Split jump to knee drive"],r:[8,8,8],s:1,c:"Step back, then drive the knee up hard. Balance at the top."},
+ {m:"ath",n:["Sprint and drop","Sprint, drop, push-up","Sprint, drop, burpee"],r:[6,6,6],c:"Three seconds sprinting in place, drop to the floor, back up. That's one."},
+ {m:"ath",n:["Shuffle and touch","Shuffle, touch, jump","Shuffle + sprawl"],r:[8,8,8],c:"Three quick side shuffles, touch the floor, go the other way."},
+ {m:"ath",n:["Skater holds","Skater to single-leg hop","Skater + broad hop"],r:[10,10,8],c:"Land on one leg and hold it still. Control beats speed."},
+ {m:"ath",n:["Short Copenhagen plank","Copenhagen plank","Copenhagen + leg lifts"],s:1,c:"Side plank with your top leg on a chair: knee for short, ankle for full."},
+ // MOBILITY (timed, active flexibility)
+ {m:"mob",n:["Supported Cossack squats","Cossack squats","Cossack + bottom pause"],c:"Wide stance, sit into one hip with the other leg straight, toes up."},
+ {m:"mob",n:["Deep squat hold (hold door)","Deep squat pry","Deep squat, arms overhead"],c:"Sit all the way down. Elbows push knees out, shift side to side."},
+ {m:"mob",n:["Standing roll-downs","Jefferson curl on a step","Jefferson curl holding books"],c:"Roll down one vertebra at a time, legs straight. Roll up just as slow."},
+ {m:"mob",n:["Straddle reach","Pancake pulses","Pancake + hands lifted"],c:"Sit wide, flat back, hinge forward. At the end, lift your hands off the floor."},
+ {m:"mob",n:["Bent-knee leg lifts","Single pike lifts","Pike compression lifts"],c:"Sit with legs straight, hands by your knees. Lift your heels with your quads."},
+ {m:"mob",n:["90/90 switches (hands back)","90/90 switches hands-free","90/90 to tall kneel"],c:"Both knees bent at 90°, rotate side to side through the hips."},
+ {m:"mob",n:["World's greatest stretch","WGS + hamstring rock-back","WGS + hip lift"],s:1,c:"Deep lunge, elbow to the floor, then rotate and reach up."},
+ {m:"mob",n:["Half-kneeling hip flexor squeeze","Couch stretch","Couch stretch + hand lift"],s:1,c:"Back shin up the couch or wall. Squeeze that glute, stay tall."},
+ {m:"mob",n:["Glute bridge hold","Tabletop bridge","Full bridge"],c:"Push through your feet and open your chest and shoulders."},
+ {m:"mob",n:["Prone Y-T raises","Prone swimmers","Swimmers, hands high"],c:"Face down, forehead on the floor. Sweep the arms from overhead to your hips."},
+ {m:"mob",n:["Standing leg raises (hold wall)","Active leg raises","Leg raise + 3s hold"],s:1,c:"Straight leg, lift it as high as you can with no swinging."},
+ {m:"mob",n:["Frog rocks","Frog to deep squat","Frogger jumps"],c:"Knees wide on all fours, rock your hips back. Feel the inner thighs."}
+];
+// ---------- stick-figure pictures ----------
+// Side-view stick figure facing right. Angles in degrees.
+// t: torso, 0 = straight up, +90 = pointing right (forward). Limb angles: 0 = straight down, +90 = forward (right), 180 = up, -90 = back.
+// ua/fa near arm (upper/fore), ua2/fa2 far arm; th/sh near leg (thigh/shin), th2/sh2 far leg.
+const P={
+ stand:{hx:100,hy:66,t:0,ua:5,fa:5,ua2:-5,fa2:-5,th:3,sh:3,th2:-3,sh2:-3},
+ armsUp:{hx:100,hy:66,t:0,ua:175,fa:175,ua2:185,fa2:185,th:3,sh:3,th2:-3,sh2:-3},
+ tiptoe:{hx:100,hy:61,t:0,ua:5,fa:5,ua2:-5,fa2:-5,th:3,sh:3,th2:-3,sh2:-3},
+ squat:{hx:92,hy:89,t:38,ua:90,fa:90,ua2:85,fa2:85,th:88,sh:-14,th2:84,sh2:-16},
+ deepSquat:{hx:94,hy:96,t:20,ua:75,fa:100,ua2:70,fa2:95,th:112,sh:-18,th2:108,sh2:-20},
+ jump:{hx:100,hy:56,t:0,ua:165,fa:165,ua2:175,fa2:175,th:5,sh:-5,th2:-5,sh2:-12},
+ tuck:{hx:100,hy:54,t:8,ua:70,fa:120,ua2:65,fa2:115,th:125,sh:-5,th2:120,sh2:-10},
+ lunge:{hx:96,hy:84,t:0,ua:5,fa:5,ua2:-5,fa2:-5,th:82,sh:-4,th2:-28,sh2:-100},
+ lungeUp:{hx:100,hy:66,t:0,ua:5,fa:5,ua2:-5,fa2:-5,th:3,sh:3,th2:-20,sh2:-25},
+ kneeDrive:{hx:100,hy:66,t:0,ua:-40,fa:20,ua2:60,fa2:140,th:3,sh:3,th2:95,sh2:5},
+ highKnee:{hx:100,hy:64,t:5,ua:60,fa:140,ua2:-40,fa2:20,th:95,sh:5,th2:-5,sh2:-15},
+ highKnee2:{hx:100,hy:64,t:5,ua:-40,fa:20,ua2:60,fa2:140,th:-5,sh:-15,th2:95,sh2:5},
+ plank:{hx:80,hy:81,t:80,ua:2,fa:2,ua2:-2,fa2:-2,th:-56,sh:-56,th2:-58,sh2:-58},
+ plankLean:{hx:88,hy:82,t:80,ua:-22,fa:-22,ua2:-24,fa2:-24,th:-58,sh:-58,th2:-60,sh2:-60},
+ pushDown:{hx:80,hy:101,t:87,ua:-125,fa:5,ua2:-128,fa2:3,th:-80,sh:-80,th2:-81,sh2:-81},
+ climb:{hx:84,hy:80,t:80,ua:2,fa:2,ua2:-2,fa2:-2,th:40,sh:-60,th2:-58,sh2:-58},
+ climb2:{hx:84,hy:80,t:80,ua:2,fa:2,ua2:-2,fa2:-2,th:-58,sh:-58,th2:40,sh2:-60},
+ pike:{hx:88,hy:66,t:135,ua:60,fa:60,ua2:58,fa2:58,th:-20,sh:-20,th2:-22,sh2:-22},
+ pikeDown:{hx:84,hy:62,t:155,ua:110,fa:5,ua2:108,fa2:3,th:-18,sh:-18,th2:-20,sh2:-20},
+ dipUp:{hx:92,hy:78,t:2,ua:-12,fa:-12,ua2:-14,fa2:-14,th:88,sh:2,th2:86,sh2:0},
+ dipDown:{hx:94,hy:88,t:5,ua:-70,fa:5,ua2:-72,fa2:3,th:70,sh:50,th2:68,sh2:48},
+ bridgeDown:{hx:96,hy:104,t:-96,ua:-92,fa:-92,ua2:-90,fa2:-90,th:128,sh:-8,th2:126,sh2:-10},
+ bridgeUp:{hx:98,hy:88,t:-112,ua:-80,fa:-90,ua2:-78,fa2:-88,th:150,sh:-4,th2:148,sh2:-6},
+ fullBridge:{hx:100,hy:70,t:-125,ua:-50,fa:-50,ua2:-48,fa2:-48,th:20,sh:-10,th2:18,sh2:-12},
+ hollow:{hx:100,hy:104,t:-80,ua:-100,fa:-100,ua2:-98,fa2:-98,th:102,sh:102,th2:100,sh2:100},
+ hollowTuck:{hx:100,hy:104,t:-70,ua:150,fa:150,ua2:148,fa2:148,th:150,sh:50,th2:148,sh2:48},
+ vup:{hx:100,hy:106,t:45,ua:130,fa:130,ua2:128,fa2:128,th:135,sh:135,th2:133,sh2:133},
+ sit:{hx:96,hy:106,t:0,ua:-10,fa:-10,ua2:-12,fa2:-12,th:90,sh:90,th2:88,sh2:88},
+ lsit:{hx:96,hy:96,t:0,ua:-2,fa:-2,ua2:-4,fa2:-4,th:95,sh:95,th2:93,sh2:93},
+ sitFold:{hx:88,hy:106,t:70,ua:90,fa:90,ua2:88,fa2:88,th:90,sh:90,th2:88,sh2:88},
+ pikeLift:{hx:88,hy:106,t:10,ua:-5,fa:20,ua2:-7,fa2:18,th:95,sh:95,th2:90,sh2:90},
+ prone:{hx:100,hy:105,t:90,ua:90,fa:90,ua2:92,fa2:92,th:-90,sh:-90,th2:-92,sh2:-92},
+ superman:{hx:100,hy:105,t:80,ua:105,fa:105,ua2:107,fa2:107,th:-80,sh:-80,th2:-82,sh2:-82},
+ supermanPull:{hx:100,hy:105,t:80,ua:-20,fa:110,ua2:-22,fa2:108,th:-80,sh:-80,th2:-82,sh2:-82},
+ hinge:{hx:96,hy:66,t:88,ua:0,fa:0,ua2:-2,fa2:-2,th:3,sh:3,th2:-3,sh2:-3},
+ slDeadlift:{hx:96,hy:66,t:88,ua:0,fa:0,ua2:-2,fa2:-2,th:3,sh:3,th2:-88,sh2:-88},
+ rollDown:{hx:98,hy:66,t:140,ua:90,fa:0,ua2:88,fa2:-2,th:3,sh:3,th2:-3,sh2:-3},
+ rowOut:{hx:92,hy:76,t:-28,ua:95,fa:95,ua2:93,fa2:93,th:32,sh:22,th2:30,sh2:20},
+ rowIn:{hx:100,hy:70,t:-14,ua:-25,fa:100,ua2:-27,fa2:98,th:28,sh:14,th2:26,sh2:12},
+ wallSit:{hx:90,hy:88,t:0,ua:5,fa:5,ua2:-5,fa2:-5,th:90,sh:0,th2:88,sh2:-2},
+ wallSitUp:{hx:90,hy:88,t:0,ua:178,fa:178,ua2:182,fa2:182,th:90,sh:0,th2:88,sh2:-2},
+ quad:{hx:82,hy:75,t:88,ua:2,fa:2,ua2:-2,fa2:-2,th:2,sh:-90,th2:-2,sh2:-90},
+ bear:{hx:84,hy:82,t:84,ua:2,fa:2,ua2:-2,fa2:-2,th:30,sh:-62,th2:28,sh2:-64},
+ bearTap:{hx:84,hy:82,t:84,ua:2,fa:2,ua2:60,fa2:110,th:30,sh:-62,th2:28,sh2:-64},
+ frogBack:{hx:72,hy:90,t:70,ua:30,fa:30,ua2:28,fa2:28,th:60,sh:-80,th2:58,sh2:-82},
+ kneel:{hx:92,hy:86,t:0,ua:175,fa:175,ua2:185,fa2:185,th:88,sh:0,th2:-8,sh2:-100},
+ kneelLean:{hx:96,hy:88,t:-8,ua:170,fa:165,ua2:180,fa2:175,th:80,sh:-4,th2:-20,sh2:-110},
+ wgs:{hx:92,hy:84,t:55,ua:180,fa:180,ua2:5,fa2:5,th:80,sh:-4,th2:-30,sh2:-60},
+ legRaise:{hx:100,hy:66,t:-3,ua:-90,fa:-90,ua2:-5,fa2:-5,th:3,sh:3,th2:80,sh2:80},
+ cossack:{hx:88,hy:90,t:25,ua:80,fa:80,ua2:78,fa2:78,th:100,sh:-25,th2:-55,sh2:-55},
+ skater:{hx:100,hy:70,t:35,ua:100,fa:100,ua2:-60,fa2:-60,th:10,sh:-5,th2:-55,sh2:-30},
+ sideLand:{hx:100,hy:74,t:30,ua:-40,fa:-40,ua2:80,fa2:80,th:15,sh:-8,th2:-40,sh2:-60},
+ sidePlank:{hx:90,hy:88,t:70,ua:2,fa:-60,ua2:180,fa2:180,th:-70,sh:-70,th2:-68,sh2:-68},
+ sidePlankDip:{hx:90,hy:98,t:76,ua:2,fa:-60,ua2:180,fa2:180,th:-78,sh:-78,th2:-76,sh2:-76},
+ sprawl:{hx:80,hy:100,t:84,ua:-30,fa:0,ua2:-32,fa2:-2,th:-82,sh:-82,th2:-84,sh2:-84},
+ broad:{hx:110,hy:58,t:30,ua:120,fa:120,ua2:115,fa2:115,th:-30,sh:-40,th2:-35,sh2:-45},
+ punch:{hx:100,hy:68,t:5,ua:90,fa:90,ua2:30,fa2:150,th:10,sh:5,th2:-12,sh2:-8}
+};
+// move (Build name or wildcard keyword) -> pose loop
+const FIG={
+ "Step-back burpees":["stand","squat","plank","squat","jump"],
+ "Squat pulses":["stand","squat","jump","squat"],
+ "Fast reverse lunges":["lungeUp","lunge"],
+ "Mountain climbers":["climb","climb2"],
+ "High knees":["highKnee","highKnee2"],
+ "Jumping jacks":["stand","jump"],
+ "Step-out plank jacks":["plank","plankLean"],
+ "Skaters":["skater","sideLand"],
+ "Squat thrusts":["stand","squat","sprawl","squat"],
+ "Up-down planks on knees":["plank","pushDown"],
+ "Speed squats":["stand","squat"],
+ "Fast feet":["tiptoe","stand","sprawl","stand"],
+ "Knee push-ups":["plank","pushDown"],
+ "Pike push-ups":["pike","pikeDown"],
+ "Bent-knee chair dips":["dipUp","dipDown"],
+ "Split squats":["lungeUp","lunge"],
+ "Assisted pistols":["stand","squat"],
+ "Single-leg glute bridges":["bridgeDown","bridgeUp"],
+ "Prone Y-raises":["prone","superman"],
+ "Towel door rows":["rowOut","rowIn"],
+ "Prone reverse snow angels":["superman","supermanPull"],
+ "Tuck-ups":["hollow","vup"],
+ "Downdog to cobra":["pike","pushDown","superman"],
+ "Single-leg calf raises":["stand","tiptoe"],
+ "Tuck hollow hold":["hollowTuck","hollow"],
+ "Plank shoulder taps":["bear","bearTap"],
+ "Plank lean":["plank","plankLean"],
+ "Seated leg lifts":["sit","lsit"],
+ "Side plank":["sidePlank","sidePlankDip"],
+ "Wall sit":["wallSit","wallSitUp"],
+ "Squat to calf raise":["squat","broad","stand"],
+ "Lateral step and stick":["skater","sideLand"],
+ "Pogo hops":["stand","jump","tuck"],
+ "Single-leg deadlift (hold wall)":["stand","slDeadlift"],
+ "Beast hold reaches":["bear","bearTap"],
+ "Incline plyo push-ups":["plank","pushDown"],
+ "Reverse lunge to knee drive":["lunge","kneeDrive"],
+ "Sprint and drop":["highKnee","highKnee2","sprawl"],
+ "Shuffle and touch":["stand","squat","punch"],
+ "Skater holds":["skater","sideLand"],
+ "Short Copenhagen plank":["sidePlank","sidePlankDip"],
+ "Supported Cossack squats":["stand","cossack"],
+ "Deep squat hold (hold door)":["deepSquat","squat"],
+ "Standing roll-downs":["stand","rollDown"],
+ "Straddle reach":["sit","sitFold"],
+ "Bent-knee leg lifts":["sit","pikeLift"],
+ "90/90 switches (hands back)":["sit","kneel"],
+ "World's greatest stretch":["lunge","wgs"],
+ "Half-kneeling hip flexor squeeze":["kneel","kneelLean"],
+ "Glute bridge hold":["bridgeDown","bridgeUp","fullBridge"],
+ "Prone Y-T raises":["prone","superman","supermanPull"],
+ "Standing leg raises (hold wall)":["stand","legRaise"],
+ "Frog rocks":["quad","frogBack"]
+};
+const WILD_FIG=[[/burpee|tabata|chorus|song/i,["stand","squat","plank","squat","jump"]],[/push-up|counter/i,["plank","pushDown"]],[/jump squat|t-rex/i,["squat","jump"]],[/plank jack/i,["plank","plankLean"]],[/high knee|sprint|chase|stair/i,["highKnee","highKnee2"]],[/hollow/i,["hollowTuck","hollow"]],[/wall sit/i,["wallSit","wallSitUp"]],[/deep squat/i,["deepSquat","squat"]],[/lava|bound/i,["skater","sideLand"]],[/cossack/i,["stand","cossack"]],[/pistol|doorframe/i,["stand","squat"]]];
+
+
+const FL={torso:34,neck:12,ua:18,fa:17,th:22,sh:22}, RAD=Math.PI/180;
+function figPts(p){
+  const g=a=>[Math.sin(a*RAD),Math.cos(a*RAD)];
+  const H=[p.hx,p.hy], S=[H[0]+FL.torso*Math.sin(p.t*RAD),H[1]-FL.torso*Math.cos(p.t*RAD)];
+  const Hd=[S[0]+FL.neck*Math.sin(p.t*RAD),S[1]-FL.neck*Math.cos(p.t*RAD)];
+  const limb=(o,a1,a2,l1,l2)=>{const d1=g(a1),d2=g(a2),m=[o[0]+l1*d1[0],o[1]+l1*d1[1]];return [o,m,[m[0]+l2*d2[0],m[1]+l2*d2[1]]]};
+  return {H,S,Hd,arm:limb(S,p.ua,p.fa,FL.ua,FL.fa),arm2:limb(S,p.ua2,p.fa2,FL.ua,FL.fa),leg:limb(H,p.th,p.sh,FL.th,FL.sh),leg2:limb(H,p.th2,p.sh2,FL.th,FL.sh)};
+}
+const KEYS=["hx","hy","t","ua","fa","ua2","fa2","th","sh","th2","sh2"];
+const full=p=>{const o={};KEYS.forEach(k=>o[k]=p[k]??p[k.replace("2","")]);return o};
+const POSE={}; Object.keys(P).forEach(k=>POSE[k]=full(P[k]));
+const ptsStr=a=>a.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" ");
+function drawPose(p){
+  const q=figPts(p);
+  $("body").setAttribute("points",ptsStr([q.H,q.S]));
+  $("nearArm").setAttribute("points",ptsStr(q.arm)); $("farArm").setAttribute("points",ptsStr(q.arm2));
+  $("nearLeg").setAttribute("points",ptsStr(q.leg)); $("farLeg").setAttribute("points",ptsStr(q.leg2));
+  $("head").setAttribute("cx",q.Hd[0].toFixed(1)); $("head").setAttribute("cy",q.Hd[1].toFixed(1));
+}
+const reduceMotion=(()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}})();
+let figSeq=["stand","armsUp"], figT0=0, figRAF=0;
+function figFor(c){
+  if(c&&!c.wild&&FIG[c.n[0]]) return FIG[c.n[0]];
+  const name=c?(c.wild?c.n:c.n[c.lvl]):"";
+  for(const [re,seq] of WILD_FIG) if(re.test(name)) return seq;
+  return ["stand","armsUp"];
+}
+function figFrame(now){
+  if($("play").hidden||$("fig").hidden){ figRAF=0; return; }
+  const SEG=1150, MOVE=850, n=figSeq.length, t=Math.max(0,now-figT0)/SEG;
+  const i=Math.floor(t)%n, f=Math.min(1,((t%1)*SEG)/MOVE), e=.5-.5*Math.cos(Math.PI*f);
+  const a=POSE[figSeq[i]], b=POSE[figSeq[(i+1)%n]], o={};
+  KEYS.forEach(k=>o[k]=a[k]+(b[k]-a[k])*e);
+  drawPose(o); figRAF=requestAnimationFrame(figFrame);
+}
+function setFig(seq){
+  figSeq=seq.filter(k=>POSE[k]); if(!figSeq.length) figSeq=["stand"];
+  $("fig").hidden=false;
+  if(reduceMotion||figSeq.length<2){ drawPose(POSE[figSeq[Math.min(1,figSeq.length-1)]]); return; }
+  figT0=performance.now(); if(!figRAF) figRAF=requestAnimationFrame(figFrame);
+}
+
+// muscle group for strength and athlete moves, keyed by the Build name
+const GROUP={"Knee push-ups":"push","Pike push-ups":"push","Bent-knee chair dips":"push","Downdog to cobra":"push","Plank lean":"push","Incline plyo push-ups":"push",
+ "Prone Y-raises":"pull","Towel door rows":"pull","Prone reverse snow angels":"pull",
+ "Split squats":"legs","Assisted pistols":"legs","Single-leg glute bridges":"legs","Single-leg calf raises":"legs","Wall sit":"legs","Squat to calf raise":"legs","Lateral step and stick":"legs","Pogo hops":"legs","Single-leg deadlift (hold wall)":"legs","Reverse lunge to knee drive":"legs","Sprint and drop":"legs","Shuffle and touch":"legs","Skater holds":"legs",
+ "Tuck-ups":"core","Tuck hollow hold":"core","Plank shoulder taps":"core","Seated leg lifts":"core","Side plank":"core","Beast hold reaches":"core","Short Copenhagen plank":"core"};
+MOVES.forEach((m,i)=>{m.id=i; if(GROUP[m.n[0]]) m.g=GROUP[m.n[0]];});
+const MODE_NAMES={mix:"Surprise mix",burn:"Burn",str:"Strength",ath:"Athlete",mob:"Mobility"};
+const TYPE_NAMES={burn:"Burn",str:"Strength",ath:"Athlete",mob:"Mobility"};
+const LEVELS=["Build","Strong","Beast"];
+const LADDER=[40,30,20];
+const HOLD={str:40,ath:40,mob:40};
+const REST={burn:10,str:20,ath:20,mob:10,wild:10};
+const ROUNDS={5:1,15:3,25:5};
+
+const WILD={
+ burst:[
+  {n:"Tabata burst",c:"20 seconds, completely all out. Burpees. Nothing held back.",dur:20},
+  {n:"Sprint finish",c:"High knees at full speed. 20 seconds. Faster than you think you can.",dur:20},
+  {n:"Burpee ladder",c:"1 burpee, 1 jump squat. Then 2 and 2. Then 3 and 3. Keep climbing.",dur:40}],
+ emom:[
+  {n:"EMOM: 8 push-ups",c:"Do 8 clean push-ups, tap Done. Whatever's left of the minute is your rest.",dur:60,emom:1,g:"push"},
+  {n:"EMOM: 12 jump squats",c:"12 jump squats, tap Done. The faster you go, the longer you rest.",dur:60,emom:1,g:"legs"},
+  {n:"EMOM: 6 burpees",c:"6 burpees, tap Done. Rest for the rest of the minute.",dur:60,emom:1},
+  {n:"EMOM: 10 Cossacks",c:"10 Cossack squats, alternating. Tap Done and rest till the minute ends.",dur:60,emom:1,g:"legs"}],
+ count:[
+  {n:"Max burpees",c:"As many as you can in 30 seconds. Tap +1 after each one.",dur:30,key:"burpees"},
+  {n:"Max push-ups",c:"Clean reps only, chest to the floor. Tap after each.",dur:30,key:"pushups"},
+  {n:"Max jump squats",c:"Full depth every rep. Tap after each.",dur:30,key:"jumpsquats"},
+  {n:"Max plank jacks",c:"Feet out and in counts as one. Tap after each.",dur:30,key:"plankjacks"}],
+ hold:[
+  {n:"Longest hollow hold",c:"Hold it until the timer ends. Lower back stays down.",dur:40,g:"core"},
+  {n:"Wall sit, arms up",c:"Thighs parallel, arms straight overhead. Breathe.",dur:45,g:"legs"},
+  {n:"Deep squat hold",c:"Sit all the way down and stay. Heels down if you can.",dur:45,mobw:1}],
+ choice:[["Clap push-ups","Tuck jumps"],["Pistol squats","Bulgarian split squats"],["Burpees","Sprawls"],["L-sit","Hollow body hold"],["Cossack squats","Pancake pulses"]],
+ scene:[
+  {n:"Stairs. Go.",c:"Run up and down the stairs, or fast step-ups on one step, until the timer ends.",dur:40},
+  {n:"Kitchen counter",c:"Incline plyo push-ups on the counter. Explode off it.",dur:40},
+  {n:"Doorframe",c:"Hold the frame and do deep assisted pistols. Switch at halfway.",dur:40}],
+ story:[
+  {n:"Rooftop chase",c:"They're right behind you. Sprint high knees, sprawl every 5 seconds.",dur:30},
+  {n:"The floor is lava",c:"Lateral bounds from rock to rock. Stick every landing or you're toast.",dur:40},
+  {n:"T-rex rampage",c:"Tiny arms, huge jump squats. Stomp the city.",dur:30}],
+ music:[{n:"Loudest song",c:"Put on a song you love, loud. Burpee on every chorus, squats the rest of the time.",dur:45}]
+};
+const WILD_NAMES={burst:"All out",emom:"Every minute",count:"Beat your record",hold:"Hold",choice:"Your pick",scene:"Change of scene",story:"Story",music:"Music"};
+
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+let wstats=store.get("ss_wild",{});
+let bests=store.get("ss_best",{});
+function pickWildCat(){
+  const cats=Object.keys(WILD);
+  const w=cats.map(c=>{const s=wstats[c]||{u:0,f:0};return (s.f+1)/(s.u+2)+.15});
+  let r=Math.random()*w.reduce((a,b)=>a+b,0);
+  for(let i=0;i<cats.length;i++){r-=w[i];if(r<=0)return cats[i]}
+  return cats[0];
+}
+function makeWild(){
+  const cat=pickWildCat(); const s=wstats[cat]||{u:0,f:0}; s.u++; wstats[cat]=s; store.set("ss_wild",wstats);
+  if(cat==="choice") return {wild:cat,n:"Pick one. Fast.",c:"You have 6 seconds, or the deck picks for you.",choice:pick(WILD.choice)};
+  return Object.assign({wild:cat},pick(WILD[cat]));
+}
+
+// weekly log, keyed by local date
+const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+let LOG=store.get("ss_log",{});
+(function(){const cut=ymd(new Date(Date.now()-35*864e5)); Object.keys(LOG).forEach(k=>{if(k<cut) delete LOG[k]});})();
+function dayRec(k){ k=k||ymd(new Date()); return LOG[k]||(LOG[k]={vig:0,mob:0,sets:{push:0,pull:0,legs:0,core:0}}); }
+const saveLog=()=>store.set("ss_log",LOG);
+function weekDays(){ const n=new Date(); const dow=(n.getDay()+6)%7; return Array.from({length:7},(_,i)=>ymd(new Date(n.getFullYear(),n.getMonth(),n.getDate()-dow+i))); }
+const setsOf=r=>r?Object.values(r.sets).reduce((a,b)=>a+b,0):0;
+const STR_DAY=6, MOB_DAY=90;
+function weekSummary(){
+  const s={vig:0,strDays:0,mobDays:0,sets:{push:0,pull:0,legs:0,core:0}};
+  weekDays().forEach(k=>{const r=LOG[k]; if(!r) return; s.vig+=r.vig; if(setsOf(r)>=STR_DAY) s.strDays++; if(r.mob>=MOB_DAY) s.mobDays++; Object.keys(s.sets).forEach(g=>s.sets[g]+=r.sets[g]||0);});
+  s.vigMin=Math.round(s.vig/60); return s;
+}
+function credit(c,secs,finished){
+  if(!c||c.choice||secs<=0&&!finished) return; const r=dayRec();
+  const tp=c.wild?(c.wild==="hold"?(c.mobw?"mob":"hold"):"vig"):c.m;
+  if(tp==="burn"||tp==="ath"||tp==="vig") r.vig+=secs;
+  if(tp==="mob") r.mob+=secs;
+  if(finished&&c.g) r.sets[c.g]++;
+  saveLog();
+  return tp;
+}
+
+// today
+const todayKey=()=>ymd(new Date());
+let today=store.get("ss_today",{});
+if(today.d!==todayKey()) today={d:todayKey(),rounds:0,secs:0,prs:0};
+today.prs=today.prs||0;
+const saveToday=()=>store.set("ss_today",today);
+function renderTodayHome(){
+  $("todayHome").textContent = today.rounds ? `Today so far: ${today.rounds} round${today.rounds>1?"s":""}, ${Math.max(1,Math.round(today.secs/60))} work min.` : "Nothing yet today. Even the 5-minute option counts.";
+}
+
+// sound + voice
+let soundOn=true, voiceOn=false, ac=null;
+function beep(f=880,d=.12){ if(!soundOn) return; try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(),g=ac.createGain(); o.frequency.value=f; o.type="triangle"; g.gain.setValueAtTime(.18,ac.currentTime); g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d); o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime+d);}catch(e){} }
+function say(t){ if(!voiceOn) return; try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.rate=1.05; speechSynthesis.speak(u);}catch(e){} }
+$("soundBtn").onclick=e=>{soundOn=!soundOn;e.currentTarget.setAttribute("aria-pressed",soundOn)};
+$("voiceBtn").onclick=e=>{voiceOn=!voiceOn;e.currentTarget.setAttribute("aria-pressed",voiceOn); if(voiceOn) say("Okay. I'll read the cards.")};
+let wake=null;
+async function keepAwake(){ try{ wake=await navigator.wakeLock.request("screen") }catch(e){} }
+
+// timer
+let T={running:false,left:0,dur:0,done:null,id:null}, onHalf=null;
+function startTimer(sec,done,half){ clearInterval(T.id); onHalf=half||null; T={running:true,dur:sec,left:sec,end:performance.now()+sec*1000,done,id:null,lastBeep:null,halfDone:false}; T.id=setInterval(tick,200); tick(); }
+function tick(){
+  if(!T.running) return;
+  T.left=Math.max(0,(T.end-performance.now())/1000);
+  const s=Math.ceil(T.left);
+  $("secs").innerHTML=s+"<small>s</small>";
+  $("barFill").style.width=(100-T.left/T.dur*100)+"%";
+  if(onHalf&&!T.halfDone&&T.left<=T.dur/2){T.halfDone=true;onHalf();}
+  if(s<=3&&s>0&&T.lastBeep!==s){T.lastBeep=s;beep(660,.08)}
+  if(T.left<=0){clearInterval(T.id);T.running=false;beep(990,.2);const d=T.done;T.done=null;d&&d();}
+}
+function stopTimer(){ clearInterval(T.id); T.running=false; T.done=null; }
+function pauseTimer(){ if(!T.running) return; T.running=false; clearInterval(T.id); T.left=Math.max(0,(T.end-performance.now())/1000); }
+function resumeTimer(){ if(T.running||!T.done) return; T.running=true; T.end=performance.now()+T.left*1000; T.id=setInterval(tick,200); }
+
+// state
+let mode="mix", level=1, mins=15, totalRounds=3, deck=[], idx=0, round=0, phase="home", paused=false, boredTaps=[], choiceTimer=null, used=new Set(), roundPRs=0, count=0, cardStart=0, emomDone=false;
+
+const SCREENS=["welcome","week","home","play","end"];
+function show(id){ SCREENS.forEach(s=>$(s).hidden=s!==id); window.scrollTo(0,0); }
+
+function draw(type,n){
+  let pool=MOVES.filter(m=>m.m===type&&!used.has(m.id));
+  if(pool.length<n){ MOVES.filter(m=>m.m===type).forEach(m=>used.delete(m.id)); pool=MOVES.filter(m=>m.m===type); }
+  return weightedShuffle(pool).slice(0,n).map(m=>{used.add(m.id);return {...m,lvl:level}});
+}
+function buildDeck(){
+  if(mode==="mob") return draw("mob",5);
+  let main= mode==="mix" ? shuffle([...draw("burn",2),...draw("str",1),...draw("ath",1)]) : draw(mode,4);
+  if(Math.random()<.4) main[Math.floor(Math.random()*main.length)]=makeWild();
+  return [...main,...draw("mob",1).map(c=>({...c,finisher:true}))];
+}
+const ladderFor=r=> r>totalRounds ? 20 : LADDER[Math.min(2,Math.floor((r-1)*3/totalRounds))];
+const isReps=c=>!c.wild&&c.r;
+const repsOf=c=>c.r[c.lvl];
+const workSecs=c=>c.dur||(c.m==="burn"?ladderFor(round):c.m==="mob"&&mode==="mob"?45:HOLD[c.m]);
+
+function renderPips(){
+  $("pips").innerHTML=deck.map((_,i)=>`<span class="pip ${i<idx?"done":i===idx?"now":""}"></span>`).join("");
+  $("roundLabel").textContent= round<=totalRounds ? `Round ${round} of ${totalRounds} · ${MODE_NAMES[mode]}` : `Bonus round · ${MODE_NAMES[mode]}`;
+}
+function updateStartLabel(){
+  const m=document.querySelector('input[name="mode"]:checked').value;
+  const t=document.querySelector('input[name="mins"]:checked').value;
+  $("startBtn").textContent=`Start ${t}-minute ${MODE_NAMES[m]}`;
+}
+document.querySelectorAll('input[name="mode"],input[name="mins"]').forEach(i=>i.addEventListener("change",updateStartLabel));
+
+function startRound(){
+  round++; deck=buildDeck(); idx=0; boredTaps=[]; roundPRs=0;
+  show("play"); keepAwake(); showCard();
+}
+
+function renderLevel(c){
+  const has=!c.wild;
+  $("lvl").hidden=!has; if(!has) return;
+  $("title").textContent=c.n[c.lvl];
+  $("lvlName").textContent=LEVELS[c.lvl];
+  $("easier").disabled=c.lvl===0; $("harder").disabled=c.lvl===2;
+  $("watch").href="https://www.youtube.com/results?search_query="+encodeURIComponent(c.n[c.lvl]+" exercise how to");
+  if(isReps(c)){ $("repsNum").textContent=repsOf(c); $("repsUnit").textContent=c.s?"reps each side":"reps"; }
+}
+function setFoot(kind){ // "reps" | "timer" | "emom" | "none"
+  $("repsWrap").hidden=kind!=="reps";
+  $("clockWrap").hidden=!(kind==="timer"||kind==="emom");
+  $("doneBtn").hidden=!(kind==="reps"||kind==="emom");
+  $("pauseBtn").disabled=kind==="reps"||kind==="none";
+}
+function showCard(){
+  if(phase==="rest"&&restVig){ dayRec().vig+=Math.min(restDur,Math.round((performance.now()-restStart)/1000)); saveLog(); }
+  restVig=false;
+  phase="work"; paused=false; emomDone=false; $("pauseBtn").textContent="Pause";
+  const c=deck[idx]; const card=$("card");
+  card.classList.remove("rest"); card.classList.toggle("wild",!!c.wild);
+  card.dataset.m=c.wild?"":c.m;
+  card.style.animation="none"; void card.offsetWidth; card.style.animation="";
+  const k=$("kind"); k.classList.remove("switch");
+  k.textContent=c.wild?`Wildcard · ${WILD_NAMES[c.wild]}`:c.finisher?"Flexibility finisher":TYPE_NAMES[c.m]+(c.s&&!isReps(c)?" · switch sides at the beep":"");
+  if(c.wild) $("title").textContent=c.n;
+  $("cue").textContent=c.c;
+  renderLevel(c);
+  if(c.choice) $("fig").hidden=true; else setFig(figFor(c));
+  $("boredBtn").innerHTML='I\'m bored<small>Swap this for a wildcard</small>';
+  $("skipBtn").textContent="Next card";
+  renderPips(); clearTimeout(choiceTimer); stopTimer();
+  count=0; $("counter").hidden=!c.key;
+  if(c.key){ $("countBtn").textContent="+1 · 0"; $("best").textContent=bests[c.key]?`Your best: ${bests[c.key]}`:"No record yet"; }
+  cardStart=performance.now();
+  if(c.choice){
+    setFoot("none"); const box=$("choices"); box.hidden=false;
+    box.innerHTML=c.choice.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("");
+    box.querySelectorAll("button").forEach(b=>b.onclick=()=>chooseOption(+b.dataset.i));
+    say("Pick one. "+c.choice.join(" or ")); beep(1200,.1);
+    choiceTimer=setTimeout(()=>chooseOption(Math.floor(Math.random()*2)),6000);
+    return;
+  }
+  $("choices").hidden=true;
+  const name=c.wild?c.n:c.n[c.lvl];
+  beep(880,.12);
+  if(isReps(c)){
+    setFoot("reps"); $("doneBtn").textContent="Done";
+    say(`${name}. ${repsOf(c)} reps${c.s?" each side":""}. Tap done when finished.`);
+    return;
+  }
+  if(c.emom){ setFoot("emom"); $("doneBtn").textContent="Done, rest now"; }
+  else setFoot("timer");
+  say(name+". "+c.c);
+  startTimer(workSecs(c),()=>cardFinished(true), c.s?()=>{k.textContent="Switch sides";k.classList.add("switch");beep(1100,.1);setTimeout(()=>beep(1100,.1),180);say("Switch sides")}:null);
+}
+function chooseOption(i){
+  clearTimeout(choiceTimer); const c=deck[idx]; const name=c.choice[i];
+  const m=MOVES.find(x=>x.n.includes(name));
+  deck[idx]=m?{...m,lvl:m.n.indexOf(name),fromWild:"choice"}:{wild:"choice",n:name,c:"Go!",dur:40};
+  showCard();
+}
+function elapsed(){ return Math.round((performance.now()-cardStart)/1000); }
+function logPartial(){
+  const c=deck[idx]; if(!c||phase!=="work"||c.choice) return;
+  const s= isReps(c) ? Math.min(elapsed(),180) : Math.max(0,Math.round(T.dur-(T.left||0)));
+  today.secs+=s; saveToday(); credit(c,s,false);
+}
+let restVig=false, restStart=0, restDur=0;
+function saveCount(){
+  const c=deck[idx]; if(!c||!c.key||!count) return;
+  if(!bests[c.key]||count>bests[c.key]){ bests[c.key]=count; store.set("ss_best",bests); today.prs++; roundPRs++; saveToday(); }
+}
+function cardFinished(natural){
+  const c=deck[idx];
+  restVig=false;
+  if(natural){
+    const s= isReps(c) ? Math.min(elapsed(),180) : (c.emom?60:T.dur);
+    today.secs+=s;
+    const tp=credit(c,s,true); restVig= tp==="burn"||tp==="ath"||tp==="vig";
+    const w=c.wild||c.fromWild; if(w){const s=wstats[w]||{u:1,f:0}; s.f++; wstats[w]=s; store.set("ss_wild",wstats);}
+    saveCount();
+  }
+  saveToday();
+  idx++;
+  if(idx>=deck.length) return endRound();
+  const nxt=deck[idx];
+  startRest(REST[c.wild?"wild":c.m]||10, nxt.finisher?"Last card: flexibility.":"Next card is face down.", "Shake it out. Breathe. Sip water.");
+}
+function startRest(sec,title,cue){
+  phase="rest"; paused=false; $("pauseBtn").textContent="Pause";
+  const card=$("card"); card.classList.remove("wild"); card.classList.add("rest"); card.dataset.m="";
+  $("kind").classList.remove("switch");
+  $("kind").textContent=`Rest · ${sec}s`; $("title").textContent=title; $("lvl").hidden=true; $("counter").hidden=true; $("fig").hidden=true;
+  $("cue").textContent=cue; $("choices").hidden=true; setFoot("timer");
+  $("skipBtn").textContent="Flip it now";
+  $("boredBtn").innerHTML='I\'m bored<small>Flip a wildcard now</small>';
+  renderPips(); say(title);
+  restStart=performance.now(); restDur=sec;
+  startTimer(sec,()=>showCard());
+}
+function fillStats(){ $("sRounds").textContent=today.rounds; $("sMins").textContent=Math.max(today.secs?1:0,Math.round(today.secs/60)); $("sPR").textContent=today.prs; }
+function renderSessbar(){
+  const n=Math.max(totalRounds,round);
+  $("sessbar").innerHTML=Array.from({length:n},(_,i)=>`<i class="${i<round?"on":""}"></i>`).join("");
+}
+function endRound(){
+  phase="end"; stopTimer();
+  today.rounds++; saveToday();
+  show("end"); fillStats(); renderSessbar(); renderEndWeek();
+  $("winBtn").onclick=endAsWin;
+  const best=Object.entries(wstats).filter(([,s])=>s.f>0).sort((a,b)=>(b[1].f/b[1].u)-(a[1].f/a[1].u))[0];
+  const tip= best ? `Wildcards that keep you going lately: ${WILD_NAMES[best[0]].toLowerCase()}. You'll get more of those.` : "";
+  if(round<totalRounds){
+    const left=totalRounds-round;
+    $("stamp").textContent= roundPRs?"New record":`Round ${round} of ${totalRounds}`;
+    $("endTitle").textContent= left===1?"One round left.": round*2>=totalRounds?"Past halfway.":"Round done. Nice.";
+    $("nextup").hidden=false;
+    const nb=ladderFor(round+1);
+    $("nextTitle").textContent=(mode==="burn"||mode==="mix")&&nb<ladderFor(round)?`Shorter: ${nb}s burn cards`:"Five new cards";
+    $("nextLen").textContent=`${left} to go`;
+    $("endNote").textContent= tip || "Stopping here still counts.";
+    $("againBtn").textContent="Next round"; $("winBtn").textContent="Call it a win";
+  } else {
+    $("stamp").textContent= roundPRs?"New record":"Session done";
+    $("endTitle").textContent= round===totalRounds?`Your ${mins} minutes are done.`:`Bonus round ${round-totalRounds}, done.`;
+    $("nextup").hidden=true;
+    $("endNote").textContent= tip || "That's the whole session. Anything extra is a bonus.";
+    $("againBtn").textContent="Bonus round"; $("winBtn").textContent="Finish";
+  }
+}
+function endAsWin(){
+  stopTimer(); clearTimeout(choiceTimer);
+  if(phase==="work"){ logPartial(); saveCount(); }
+  if(phase!=="end"){ today.rounds++; saveToday(); }
+  const finishedAll=round>=totalRounds;
+  phase="end"; show("end"); $("nextup").hidden=true; renderSessbar(); renderEndWeek();
+  $("stamp").textContent="It counts"; $("endTitle").textContent= finishedAll?"Session done. Well trained.":"You trained today. That's the win.";
+  fillStats(); $("endNote").textContent="Stopping when you're done is part of the plan.";
+  $("againBtn").textContent="Actually, one more round"; $("winBtn").textContent="Back to start"; $("winBtn").onclick=goHome;
+  try{wake&&wake.release()}catch(e){}
+}
+function goHome(){ phase="home"; round=0; used.clear(); show("home"); renderTodayHome(); renderHomeWeek(); }
+
+// bored button
+function onBored(){
+  const now=Date.now(); boredTaps=boredTaps.filter(t=>now-t<120000); boredTaps.push(now);
+  if(phase==="rest"){ stopTimer(); deck[idx]=makeWild(); return showCard(); }
+  if(boredTaps.length===1) return swapWild();
+  pauseTimer(); clearTimeout(choiceTimer);
+  if(boredTaps.length===2){
+    sheet("Bored again?","Your body might want a real break, or something even harder.",
+      "Something harder",()=>{ logPartial(); stopTimer(); deck[idx]=Object.assign({wild:"burst"},pick(WILD.burst)); showCard(); },
+      "60-second breather",()=>{ logPartial(); stopTimer(); restVig=false; idx++; if(idx>=deck.length) return endRound(); startRest(60,"Breather. Shake it all out.","Roll your shoulders. Drink something. The next card waits."); });
+  } else {
+    boredTaps=[];
+    sheet("You're allowed to stop.","You trained. Ending now still counts as a win today.",
+      "End here as a win",endAsWin,
+      "One more card",()=>swapWild());
+  }
+}
+function swapWild(){ logPartial(); saveCount(); stopTimer(); deck[idx]=makeWild(); showCard(); }
+function sheet(t,p,aText,aFn,bText,bFn){
+  $("sheetTitle").textContent=t; $("sheetText").textContent=p; $("sheetA").textContent=aText; $("sheetB").textContent=bText;
+  $("scrim").hidden=false; $("sheetA").focus();
+  $("sheetA").onclick=()=>{$("scrim").hidden=true;aFn()};
+  $("sheetB").onclick=()=>{$("scrim").hidden=true;bFn()};
+}
+
+// ---------- weekly goals ----------
+const FOCUS={
+ health:{n:"Health basics",d:"The WHO minimum",g:{vig:75,str:2,sets:4,mob:2}},
+ fit:{n:"Get fitter",d:"More cardio and stamina",g:{vig:150,str:2,sets:6,mob:2}},
+ strong:{n:"Get stronger",d:"Calisthenics strength",g:{vig:75,str:3,sets:10,mob:2}},
+ muscle:{n:"Build muscle",d:"More hard sets",g:{vig:75,str:3,sets:14,mob:2}},
+ flex:{n:"Flexibility",d:"Mobility most days",g:{vig:75,str:2,sets:6,mob:5}},
+ athlete:{n:"All-round athlete",d:"Power, cardio and range",g:{vig:120,str:3,sets:10,mob:3}}
+};
+let GOALS=store.get("ss_goals",null);
+const TARGETS=[
+ {k:"vig",n:"Vigorous cardio",u:"min / week",step:15,min:0,max:300,why:"WHO: 75–150 min of vigorous activity a week. More than that brings extra benefit."},
+ {k:"str",n:"Strength days",u:"days / week",step:1,min:0,max:6,why:"WHO: at least 2 days a week, all major muscle groups. Leave about 48 hours before hitting the same muscles hard again."},
+ {k:"sets",n:"Hard sets per muscle group",u:"sets / week",step:2,min:0,max:20,why:"Research: around 10+ hard sets per muscle group a week builds muscle well. More still helps, by less each time."},
+ {k:"mob",n:"Mobility days",u:"days / week",step:1,min:0,max:7,why:"ACSM: flexibility work 2–3 days a week. Daily is even better."}
+];
+const REG_NAMES={push:"Push",pull:"Pull",legs:"Legs",core:"Core"};
+const DAYS=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+let draft=null;
+function renderWeekSetup(){
+  draft=Object.assign({focus:"health"},FOCUS.health.g,GOALS||{});
+  $("focusPick").innerHTML=Object.entries(FOCUS).map(([k,f])=>`<input type="radio" name="focus" id="f-${k}" value="${k}" ${draft.focus===k?"checked":""}><label for="f-${k}"><b>${f.n}</b><small>${f.d}</small></label>`).join("");
+  $("focusPick").querySelectorAll("input").forEach(i=>i.onchange=()=>{draft=Object.assign({focus:i.value},FOCUS[i.value].g);renderTargets();});
+  renderTargets();
+}
+function renderTargets(){
+  $("targets").innerHTML=TARGETS.map(t=>`<div class="target"><b>${t.n}</b><div class="stepper"><button data-k="${t.k}" data-d="-1" aria-label="Less">−</button><output id="o-${t.k}">${draft[t.k]}<small>${t.u}</small></output><button data-k="${t.k}" data-d="1" aria-label="More">+</button></div><span class="why">${t.why}</span></div>`).join("");
+  $("targets").querySelectorAll("button").forEach(b=>b.onclick=()=>{const t=TARGETS.find(x=>x.k===b.dataset.k); draft[t.k]=Math.max(t.min,Math.min(t.max,draft[t.k]+t.step*(+b.dataset.d))); $("o-"+t.k).innerHTML=`${draft[t.k]}<small>${t.u}</small>`;});
+}
+function openWeek(){ renderWeekSetup(); phase="week"; show("week"); }
+function goalBar(label,val,goal,unit,c){ const p=goal?Math.min(100,val/goal*100):100; const met=val>=goal; return `<div class="goal ${met?"met":""}" style="--c:${c}"><div class="row"><span>${label}</span><span>${val} / ${goal}${unit}${met?" ✓":""}</span></div><div class="track"><i style="width:${p}%"></i></div></div>`; }
+function renderWeekBars(target,dl){
+  const s=weekSummary(); const dow=(new Date().getDay()+6)%7, left=7-dow;
+  $(dl).textContent=`${DAYS[dow]} · ${left} day${left>1?"s":""} left`;
+  $(target).innerHTML=`<div style="display:grid;gap:10px">${goalBar("Vigorous cardio",s.vigMin,GOALS.vig," min","var(--burn)")}${goalBar("Strength days",s.strDays,GOALS.str,"","var(--str)")}${goalBar("Mobility days",s.mobDays,GOALS.mob,"","var(--mob)")}<div class="regions">${Object.keys(REG_NAMES).map(g=>`<span class="${s.sets[g]>=GOALS.sets?"met":""}">${REG_NAMES[g]} ${s.sets[g]}/${GOALS.sets} sets</span>`).join("")}</div></div>`;
+}
+function weightedShuffle(pool){
+  if(!GOALS) return shuffle(pool);
+  const s=weekSummary();
+  return pool.map(m=>({m,k:Math.random()*(m.g?Math.max(0,GOALS.sets-s.sets[m.g])+2:3)})).sort((a,b)=>b.k-a.k).map(x=>x.m);
+}
+function suggestion(){
+  const s=weekSummary(); const n=new Date(); const dow=(n.getDay()+6)%7, left=7-dow;
+  const t=dayRec(), y=dow>0?LOG[ymd(new Date(n.getFullYear(),n.getMonth(),n.getDate()-1))]:null;
+  const strToday=setsOf(t)>=STR_DAY, strYest=setsOf(y)>=STR_DAY, mobToday=t.mob>=MOB_DAY;
+  const need={vig:Math.max(0,GOALS.vig-s.vigMin),str:Math.max(0,GOALS.str-s.strDays),mob:Math.max(0,GOALS.mob-s.mobDays)};
+  const strSlots=Math.max(1,Math.ceil((strYest?left-1:left)/2));
+  const u={vig:need.vig/(left*10), str:strToday?0:need.str/strSlots*(strYest&&need.str<strSlots?0.4:1), mob:mobToday?0:need.mob/left};
+  const order=Object.entries(u).sort((a,b)=>b[1]-a[1]);
+  const dl=`${left} day${left>1?"s":""} left`;
+  if(order[0][1]<=0) return {mode:"mob",mins:5,why:"Every goal for this week is done. Anything now is a bonus, so keep it easy and loosen up."};
+  const top=order[0][0];
+  let mode= top==="vig" ? (GOALS.focus==="athlete"?"ath":"burn") : top;
+  const both=u.vig>=0.6&&u.str>=0.6;
+  if(both) mode="mix";
+  let mins=15, why;
+  if(mode==="burn"||mode==="ath"||mode==="mix"){ const perDay=need.vig/left; mins= perDay>12?25:perDay>5?15:5; }
+  if(mode==="str") mins= need.str>=strSlots?25:15;
+  if(mode==="mob") mins= need.mob>=left?15:5;
+  const weakest=Object.entries(s.sets).sort((a,b)=>a[1]-b[1])[0][0];
+  if(mode==="str") why=`${need.str} more strength day${need.str>1?"s":""} to go, ${dl}. The deck leans toward ${REG_NAMES[weakest].toLowerCase()}, your lowest muscle group this week.`;
+  else if(mode==="mob") why=`${need.mob} more mobility day${need.mob>1?"s":""} to go, ${dl}.`;
+  else why=`${need.vig} vigorous minutes to go, ${dl}. That's about ${Math.ceil(need.vig/left)} a day.`;
+  if(mode==="mix") why=`You're behind on cardio and strength, so a mix covers both. `+why;
+  if(strYest&&mode!=="str"&&need.str>0&&!both) why+=" You did strength yesterday, so today rests those muscles.";
+  return {mode,mins,why};
+}
+function renderHomeWeek(){
+  $("weekPanel").hidden=!GOALS; if(!GOALS) return;
+  renderWeekBars("weekBars","daysLeft");
+  const sg=suggestion();
+  $("sugTitle").textContent=`${sg.mins}-minute ${MODE_NAMES[sg.mode]}`; $("sugWhy").textContent=sg.why;
+  $("sugBtn").textContent="Use this";
+  $("sugBtn").onclick=()=>{ $("m-"+sg.mode).checked=true; $("t-"+sg.mins).checked=true; updateStartLabel(); $("sugBtn").textContent="Selected"; $("startBtn").scrollIntoView({behavior:"smooth",block:"center"}); };
+}
+function renderEndWeek(){ $("weekPanel2").hidden=!GOALS; if(GOALS) renderWeekBars("weekBars2","daysLeft2"); }
+$("saveWeekBtn").onclick=()=>{ GOALS=draft; store.set("ss_goals",GOALS); store.set("ss_seen",1); goHome(); };
+$("editWeekBtn").onclick=openWeek;
+
+// remembered choices
+level=store.get("ss_level",1); const lr=$("l-"+level); if(lr) lr.checked=true;
+const mr=$("m-"+store.get("ss_mode","mix")); if(mr) mr.checked=true;
+const tr=$("t-"+store.get("ss_mins",15)); if(tr) tr.checked=true;
+updateStartLabel();
+
+$("helpBtn").onclick=()=>{ if(phase==="work"||phase==="rest"){ pauseTimer(); paused=true; $("pauseBtn").textContent="Resume"; } helpFrom=phase; show("welcome"); $("welcomeBtn").textContent= (phase==="work"||phase==="rest")?"Back to my workout":"Let's set it up"; };
+let helpFrom="home";
+$("welcomeBtn").onclick=()=>{ store.set("ss_seen",1); if(helpFrom==="work"||helpFrom==="rest") show("play"); else if(helpFrom==="end") show("end"); else if(!GOALS) openWeek(); else goHome(); };
+$("easier").onclick=()=>{const c=deck[idx]; if(c&&!c.wild&&c.lvl>0){c.lvl--;renderLevel(c);say(c.n[c.lvl])}};
+$("harder").onclick=()=>{const c=deck[idx]; if(c&&!c.wild&&c.lvl<2){c.lvl++;renderLevel(c);say(c.n[c.lvl])}};
+$("countBtn").onclick=()=>{ count++; $("countBtn").textContent="+1 · "+count; };
+$("doneBtn").onclick=()=>{
+  const c=deck[idx]; if(phase!=="work"||!c) return;
+  if(c.emom){ if(emomDone) return; emomDone=true; $("doneBtn").hidden=true; $("kind").textContent="Earned rest"; $("title").textContent="Rest till the minute's up."; beep(990,.15); say("Nice. Rest."); return; }
+  beep(990,.15); cardFinished(true);
+};
+$("startBtn").onclick=()=>{
+  mode=document.querySelector('input[name="mode"]:checked').value;
+  level=+document.querySelector('input[name="level"]:checked').value;
+  mins=+document.querySelector('input[name="mins"]:checked').value; totalRounds=ROUNDS[mins];
+  store.set("ss_level",level); store.set("ss_mode",mode); store.set("ss_mins",mins);
+  round=0; used.clear(); beep(0.0001,.01); startRound();
+};
+$("boredBtn").onclick=onBored;
+$("pauseBtn").onclick=()=>{ if(paused){paused=false;resumeTimer();$("pauseBtn").textContent="Pause"} else {paused=true;pauseTimer();$("pauseBtn").textContent="Resume"} };
+$("skipBtn").onclick=()=>{ if(phase==="rest"){ stopTimer(); return showCard(); } logPartial(); saveCount(); stopTimer(); clearTimeout(choiceTimer); idx++; if(idx>=deck.length) return endRound(); showCard(); };
+$("againBtn").onclick=()=>{ $("winBtn").onclick=endAsWin; startRound(); };
+$("winBtn").onclick=endAsWin;
+
+// first visit shows the welcome; after that, straight to setup
+if(!store.get("ss_seen",0)) show("welcome");
+else if(!GOALS) openWeek();
+else goHome();
+renderTodayHome();
+})();
+</script>
